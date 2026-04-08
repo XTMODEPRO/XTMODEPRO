@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XT IP CHECKER - SYSTEM XTMODEPRO</title>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #00ff95;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 149, 0.2);
+            width: 350px;
+            text-align: center;
+            border: 1px solid #00ff95;
+        }
+        h2 { margin-bottom: 20px; font-size: 20px; text-transform: uppercase; }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #262626;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            width: 95%;
+            padding: 10px;
+            background-color: #00ff95;
+            border: none;
+            color: #0d0d0d;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #00cc77; }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #262626;
+            border-radius: 5px;
+            display: none;
+            text-align: left;
+            font-size: 14px;
+        }
+        .info { color: #fff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>XT IP CHECKER</h2>
+    <input type="text" id="ipInput" placeholder="Masukkan IP Address (Contoh: 8.8.8.8)">
+    <button onclick="checkIP()">CEK LOKASI</button>
+
+    <div id="result">
+        <div>Negara: <span id="country" class="info">-</span></div>
+        <div>Kode Negara: <span id="countryCode" class="info">-</span></div>
+        <div>Kota: <span id="city" class="info">-</span></div>
+        <div>ISP: <span id="isp" class="info">-</span></div>
+    </div>
+</div>
+
+<script>
+    async function checkIP() {
+        const ip = document.getElementById('ipInput').value;
+        const resDiv = document.getElementById('result');
+        
+        if (!ip) {
+            alert("Masukkan IP dulu, Nanta!");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://ip-api.com/json/${ip}`);
+            const data = await response.json();
+
+            if (data.status === "success") {
+                document.getElementById('country').innerText = data.country;
+                document.getElementById('countryCode').innerText = data.countryCode;
+                document.getElementById('city').innerText = data.city;
+                document.getElementById('isp').innerText = data.isp;
+                resDiv.style.display = "block";
+            } else {
+                alert("IP tidak valid atau tidak ditemukan!");
+            }
+        } catch (error) {
+            alert("Gagal mengambil data. Pastikan koneksi internet aktif.");
+        }
+    }
+</script>
+
+</body>
+</html>
