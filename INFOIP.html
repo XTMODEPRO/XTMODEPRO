@@ -1,193 +1,147 @@
--- XTMODEPRO UNIVERSAL MENU - SHIELD, GOD MODE & IP CHECKER
-local Player = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local CoreGui = game:GetService("CoreGui")
-local UIS = game:GetService("UserInputService")
-local HttpService = game:GetService("HttpService") -- Untuk ambil data IP
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO IP CHECKER</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
 
--- VARIABEL STATE
-local ShieldActive = false
-local CrusherActive = false
-local BunkerParts = {}
-local ShieldConnection = nil
-local Radius = 20
+        /* Container Ultra Protect Style */
+        .tools-box {
+            border: 2px solid #0f0;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 350px;
+            width: 100%;
+            /* Neon Green Glow Effect */
+            box-shadow: 0 0 10px #0f0, 0 0 20px #0f0, inset 0 0 5px #0f0;
+        }
 
--- 1. SETUP UI UTAMA
-if CoreGui:FindFirstChild("XT_UniversalMenu") then CoreGui.XT_UniversalMenu:Destroy() end
-local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "XT_UniversalMenu"
+        .title {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px #0f0;
+            margin-bottom: 25px;
+            letter-spacing: 1.5px;
+        }
 
--- Tombol Logo XT
-local OpenBtn = Instance.new("TextButton", ScreenGui)
-OpenBtn.Size = UDim2.new(0, 70, 0, 70)
-OpenBtn.Position = UDim2.new(0.02, 0, 0.4, 0)
-OpenBtn.Text = "XT"
-OpenBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.Font = Enum.Font.GothamBold
-OpenBtn.TextSize = 25
-OpenBtn.ZIndex = 1000
-Instance.new("UICorner", OpenBtn).CornerRadius = UDim.new(0, 15)
+        /* Inner Box untuk Display IP */
+        .inner-display {
+            border: 1px dashed #0f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
 
--- Frame Menu Utama (Tinggi ditambah sedikit agar muat tombol IP)
-local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 250, 0, 340) 
-Frame.Position = UDim2.new(0.5, -125, 0.5, -170)
-Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-Frame.Visible = false
-Frame.ZIndex = 1000
-Instance.new("UICorner", Frame)
+        .ip-text {
+            color: #0f0;
+            font-size: 1.6rem;
+            word-wrap: break-word;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
 
-local Title = Instance.new("TextLabel", Frame)
-Title.Size = UDim2.new(1, 0, 0, 50)
-Title.Text = "XTMODEPRO"
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.BackgroundTransparency = 1
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 22
+        /* Tombol Copy Kecil (di dalam box) */
+        .btn-copy {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: #fff;
+            border: 1px solid #0f0;
+            padding: 5px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
 
--- 2. LOGIKA DRAGGABLE (SMOOTH & BOUNDED)
-local function MakeDraggable(obj)
-    local dragging, dragInput, dragStart, startPos
-    local dragSpeed = 0.15
+        .btn-copy:active { background-color: rgba(0, 255, 0, 0.3); }
 
-    obj.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; dragStart = input.Position; startPos = obj.Position
-        end
-    end)
+        /* Tombol Utama */
+        .btn-action {
+            display: block;
+            width: 100%;
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 0 10px #0f0;
+            transition: 0.3s;
+        }
 
-    obj.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
+        .btn-action:hover {
+            box-shadow: 0 0 20px #0f0;
+        }
 
-    RunService.RenderStepped:Connect(function()
-        if dragging and dragInput then
-            local delta = dragInput.Position - dragStart
-            local targetX = math.clamp(startPos.X.Offset + delta.X, 0, ScreenGui.AbsoluteSize.X - obj.AbsoluteSize.X)
-            local targetY = math.clamp(startPos.Y.Offset + delta.Y, 0, ScreenGui.AbsoluteSize.Y - obj.AbsoluteSize.Y)
-            obj.Position = obj.Position:Lerp(UDim2.new(startPos.X.Scale, targetX, startPos.Y.Scale, targetY), dragSpeed)
-        end
-    end)
-    
-    UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
-    end)
-end
+        /* Animasi Loading sederhana */
+        .ip-fetching { color: #888; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
 
-MakeDraggable(OpenBtn)
-MakeDraggable(Frame)
+    <div class="tools-box">
+        <div class="title">XTMODEPRO IP DIAGNOSTIC</div>
 
--- 3. FUNGSI FITUR (SHIELD, GOD MODE & IP CHECK)
-local function UpdateBunker()
-    local Char = Player.Character
-    local Root = Char and Char:FindFirstChild("HumanoidRootPart")
-    if Root and #BunkerParts == 6 then
-        local Dist = 10
-        BunkerParts[1].CFrame = Root.CFrame * CFrame.new(0, 0, -Dist)
-        BunkerParts[2].CFrame = Root.CFrame * CFrame.new(0, 0, Dist)
-        BunkerParts[3].CFrame = Root.CFrame * CFrame.new(-Dist, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
-        BunkerParts[4].CFrame = Root.CFrame * CFrame.new(Dist, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
-        BunkerParts[5].CFrame = Root.CFrame * CFrame.new(0, Dist + 2, 0) * CFrame.Angles(math.rad(90), 0, 0)
-        BunkerParts[6].CFrame = Root.CFrame * CFrame.new(0, -Dist - 2, 0) * CFrame.Angles(math.rad(90), 0, 0)
+        <div class="inner-display">
+            <p id="ip-display" class="ip-text ip-fetching">FETCHING...</p>
+            <button class="btn-copy" onclick="copyIP()">📋 COPY IP</button>
+        </div>
 
-        for _, part in ipairs(Char:GetDescendants()) do
-            if part:IsA("BasePart") then
-                for _, shield in ipairs(BunkerParts) do
-                    if not part:FindFirstChild("NoTouch_" .. shield.Name) then
-                        local nc = Instance.new("NoCollisionConstraint", part)
-                        nc.Name = "NoTouch_" .. shield.Name
-                        nc.Part0 = part; nc.Part1 = shield
-                    end
-                end
-            end
-        end
-    end
-end
+        <button class="btn-action" onclick="fetchIP()">CHECK ULANG / RESET IP</button>
+    </div>
 
--- 4. TOMBOL MENU
-local function CreateBtn(txt, pos, color)
-    local b = Instance.new("TextButton", Frame)
-    b.Text = txt
-    b.Size = UDim2.new(0.9, 0, 0, 45)
-    b.Position = pos
-    b.BackgroundColor3 = color
-    b.TextColor3 = Color3.new(1, 1, 1)
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 16
-    Instance.new("UICorner", b)
-    return b
-end
+    <script>
+        // Logika Pengambilan IP Real-time
+        async function fetchIP() {
+            const display = document.getElementById('ip-display');
+            display.innerText = "REFRESHING...";
+            display.classList.add('ip-fetching');
 
-local ShieldBtn = CreateBtn("SHIELD: OFF", UDim2.new(0.05, 0, 0.18, 0), Color3.fromRGB(60, 60, 60))
-local GodBtn = CreateBtn("GOD MODE: OFF", UDim2.new(0.05, 0, 0.35, 0), Color3.fromRGB(150, 0, 0))
-local IPBtn = CreateBtn("CEK IP VPN", UDim2.new(0.05, 0, 0.52, 0), Color3.fromRGB(0, 100, 200))
-local CloseBtn = CreateBtn("MATIKAN SEMUA", UDim2.new(0.05, 0, 0.78, 0), Color3.fromRGB(200, 0, 0))
+            try {
+                // Menggunakan API ipapi.co (atau ipify jika hanya butuh text)
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                
+                display.innerText = data.ip;
+                display.classList.remove('ip-fetching');
+                console.log("[!] Target IP Detected: " + data.ip);
+            } catch (error) {
+                display.innerText = "ERROR CONN";
+                display.style.color = 'red';
+                console.error("[!] Error Handling: Gagal mengambil data IP");
+            }
+        }
 
--- 5. LOGIKA KLIK
-OpenBtn.MouseButton1Click:Connect(function() Frame.Visible = not Frame.Visible end)
+        // Fungsi Salin ke Clipboard
+        function copyIP() {
+            const ip = document.getElementById('ip-display').innerText;
+            if(ip === "FETCHING..." || ip === "REFRESHING..." || ip === "ERROR CONN") return;
 
--- Fitur Shield
-ShieldBtn.MouseButton1Click:Connect(function()
-    ShieldActive = not ShieldActive
-    if ShieldActive then
-        ShieldBtn.Text = "SHIELD: ON"
-        ShieldBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-        for i = 1, 6 do
-            local p = Instance.new("Part", workspace)
-            p.Name = "XT_ShieldWall_" .. i
-            p.Size = Vector3.new(40, 40, 1)
-            p.Transparency = 1; p.Anchored = true; p.CanCollide = true
-            table.insert(BunkerParts, p)
-        end
-        ShieldConnection = RunService.RenderStepped:Connect(UpdateBunker)
-    else
-        ShieldBtn.Text = "SHIELD: OFF"
-        ShieldBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-        if ShieldConnection then ShieldConnection:Disconnect() end
-        for _, v in pairs(BunkerParts) do v:Destroy() end
-        BunkerParts = {}
-    end
-end)
+            navigator.clipboard.writeText(ip).then(() => {
+                alert("IP ADDRESS BERHASIL DISALIN");
+                console.log("[!] Target Data (IP) copied to clipboard.");
+            });
+        }
 
--- Fitur God Mode
-GodBtn.MouseButton1Click:Connect(function()
-    CrusherActive = not CrusherActive
-    GodBtn.Text = CrusherActive and "GOD MODE: ON" or "GOD MODE: OFF"
-    GodBtn.BackgroundColor3 = CrusherActive and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(150, 0, 0)
-end)
-
--- Fitur CEK IP VPN
-IPBtn.MouseButton1Click:Connect(function()
-    IPBtn.Text = "Sedang Mengecek..."
-    task.spawn(function()
-        local success, result = pcall(function()
-            -- Menggunakan API publik ipify untuk ambil IP
-            return game:HttpGet("https://api.ipify.org")
-        end)
-        
-        if success then
-            IPBtn.Text = "IP: " .. result
-            setclipboard(result) -- Otomatis copy ke clipboard HP kamu
-            print("SUKSES: IP VPN ditemukan dan disalin!")
-        else
-            IPBtn.Text = "Gagal Ambil IP"
-        end
-        task.wait(3)
-        IPBtn.Text = "CEK IP VPN (Refresh)"
-    end)
-end)
-
-CloseBtn.MouseButton1Click:Connect(function()
-    ShieldActive = false; CrusherActive = false
-    ShieldBtn.Text = "SHIELD: OFF"; GodBtn.Text = "GOD MODE: OFF"
-    ShieldBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    GodBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-    if ShieldConnection then ShieldConnection:Disconnect() end
-    for _, v in pairs(BunkerParts) do v:Destroy() end
-    BunkerParts = {}
-end)
+        // Jalankan saat load pertama kali
+        fetchIP();
+    </script>
+</body>
+</html>
