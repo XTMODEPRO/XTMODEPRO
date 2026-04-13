@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Required | XTMODEPRO</title>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --card: #161b22;
+            --accent: #58a6ff;
+            --text: #c9d1d9;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .tool-card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .header-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        h1 { font-size: 1.2rem; margin-bottom: 10px; color: #fff; }
+        p { font-size: 0.85rem; color: #8b949e; margin-bottom: 25px; }
+
+        /* Container untuk widget agar rapi */
+        #turnstile-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-tag {
+            font-size: 0.7rem;
+            margin-top: 20px;
+            border-top: 1px solid #30363d;
+            padding-top: 15px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="tool-card">
+    <div class="header-icon">🛡️</div>
+    <h1>Security Check</h1>
+    <p>Harap verifikasi browser Anda untuk mengakses <b>XT64BIT</b>.</p>
+
+    <div id="turnstile-container">
+        <div class="cf-turnstile" 
+             data-sitekey="1x00000000000000000000AA" 
+             data-callback="onVerify"></div>
+    </div>
+
+    <div class="footer-tag">
+        XTMODEPRO ENGINE V16
+    </div>
+</div>
+
+<script>
+    // Fungsi ini otomatis terpanggil saat user berhasil verifikasi
+    function onVerify(token) {
+        console.log("Verified!");
+        // Delay sebentar agar user tahu verifikasi sukses
+        setTimeout(() => {
+            window.location.href = "https://xtmodepro.github.io/XTMODEPRO/XT64BIT.html";
+        }, 800);
+    }
+</script>
+
+</body>
+</html>
