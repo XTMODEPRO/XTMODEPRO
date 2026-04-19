@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO - HTML LAYER ENC</title>
+    <style>
+        :root {
+            --primary: #00ff41;
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+        }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg);
+            color: var(--primary);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--surface);
+            padding: 25px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            border-radius: 8px;
+        }
+        h2 { text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            color: var(--primary);
+            border: 1px solid #333;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 14px;
+            resize: none;
+        }
+        .btn-group { margin-top: 15px; display: flex; gap: 10px; }
+        button {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: var(--primary);
+            color: #000;
+        }
+        .output-label { margin-top: 20px; display: block; font-size: 0.9em; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>[ XTMODEPRO - HTML ENCRYPTOR ]</h2>
+    <p style="font-size: 12px; text-align: center; color: #888;">XOR -> BASE64 -> XOR PROTECTION</p>
+    
+    <label>Input HTML Script:</label>
+    <textarea id="inputHtml" placeholder="Tempel kode HTML di sini..."></textarea>
+
+    <div class="btn-group">
+        <button onclick="encryptProcess()">ENCRYPT SCRIPT</button>
+        <button onclick="copyResult()">COPY RESULT</button>
+    </div>
+
+    <label class="output-label">Encrypted Output (Ready to use):</label>
+    <textarea id="outputResult" readonly placeholder="Hasil enkripsi akan muncul di sini..."></textarea>
+</div>
+
+<script>
+    const KEY = "XTMODEPRO_SECRET"; // Kunci XOR
+
+    function xorCipher(text, key) {
+        let result = "";
+        for (let i = 0; i < text.length; i++) {
+            result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        return result;
+    }
+
+    function encryptProcess() {
+        const input = document.getElementById('inputHtml').value;
+        if(!input) return alert("Isi script dulu!");
+
+        // 1. XOR Pertama
+        let layer1 = xorCipher(input, KEY);
+        // 2. Base64
+        let layer2 = btoa(unescape(encodeURIComponent(layer1)));
+        // 3. XOR Kedua
+        let layer3 = xorCipher(layer2, KEY);
+        // Encode ke hex agar aman di paste ke HTML
+        let finalHex = Array.from(layer3).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+        // Generate Loader Script
+        const fbUrl = "https://www.facebook.com/YOUR_FB_ID"; // Ganti ke URL FB kamu
+        
+        let loader = `
+<!DOCTYPE html>
+<html>
+<head><title>Loading...</title></head>
+<body>
+<script>
+(function(){
+    const k = "${KEY}";
+    const h = "${finalHex}";
+    const f = "${fbUrl}";
+    
+    // Hex to String
+    let s = "";
+    for(let i=0; i<h.length; i+=2) s += String.fromCharCode(parseInt(h.substr(i, 2), 16));
+    
+    // Decrypt Process
+    const xc = (t, y) => Array.from(t).map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ y.charCodeAt(i % y.length))).join('');
+    
+    let d1 = xc(s, k); // Decrypt XOR
+    let d2 = decodeURIComponent(escape(atob(d1))); // Decrypt Base64
+    let final = xc(d2, k); // Decrypt XOR Final
+    
+    document.open();
+    document.write(final);
+    document.close();
+    
+    // Anti-Bot & Anti-Copy: Redirect URL setelah 2 detik
+    setTimeout(() => {
+        window.history.replaceState(null, null, f);
+        window.location.replace(f);
+    }, 2000); 
+})();
+<\/script>
+</body>
+</html>`;
+
+        document.getElementById('outputResult').value = loader.trim();
+    }
+
+    function copyResult() {
+        const output = document.getElementById('outputResult');
+        output.select();
+        document.execCommand('copy');
+        alert("Script tersalin!");
+    }
+</script>
+
+</body>
+</html>
