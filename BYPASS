@@ -1,0 +1,58 @@
+# === MLBB MAIN BYPASS LIST ===
+0.0.0.0 *.antihack
+0.0.0.0 *.anticheat
+0.0.0.0 *.hack
+0.0.0.0 *.cheat
+0.0.0.0 moba.*
+0.0.0.0 mobile.*
+0.0.0.0 global-login.ml.youngjoygame.com
+0.0.0.0 global-report.ml.youngjoygame.com
+0.0.0.0 www.waxmoon.net
+0.0.0.0 android.clients.google.com
+0.0.0.0 play.googleapis.com
+
+# === MOONTON LOG & ANALYTICS ===
+0.0.0.0 log.mobilelegends.com
+0.0.0.0 sg-log.mobilelegends.com
+0.0.0.0 id-log.mobilelegends.com
+0.0.0.0 ph-log.mobilelegends.com
+0.0.0.0 sdk.m.youngjoygame.com
+0.0.0.0 s.outlook.com
+0.0.0.0 account.moonton.com
+0.0.0.0 api.mobilelegends.com
+0.0.0.0 notice.mobilelegends.com
+
+# === THIRD PARTY TRACKERS & CRASH REPORTS ===
+0.0.0.0 crashlytics.com
+0.0.0.0 firebase-settings.crashlytics.com
+0.0.0.0 reports.crashlytics.com
+0.0.0.0 settings.crashlytics.com
+0.0.0.0 app-measurement.com
+0.0.0.0 analytics.google.com
+0.0.0.0 graph.facebook.com
+0.0.0.0 connect.facebook.net
+0.0.0.0 stats.g.doubleclick.net
+
+# === ADDITIONAL SECURITY ENDPOINTS ===
+0.0.0.0 security.mobilelegends.com
+0.0.0.0 verify.mobilelegends.com
+0.0.0.0 checker.youngjoygame.com
+0.0.0.0 unity3d.com
+0.0.0.0 config.unity3d.com
+0.0.0.0 cdp.cloud.unity3d.com
+
+# === IP RANGES (WILDCARD) ===
+0.0.0.0 103.*
+0.0.0.0 94.*
+0.0.0.0 161.117.*
+0.0.0.0 47.74.*
+0.0.0.0 150.109.*
+0.0.0.0 101.32.*
+0.0.0.0 119.28.*
+0.0.0.0 129.227.*
+
+# === CDN & AD SERVICES (OPTIONAL) ===
+0.0.0.0 ads.google.com
+0.0.0.0 tclogs.tencentmusic.com
+0.0.0.0 adservice.google.com
+0.0.0.0 google-analytics.com
