@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO - Video Player</title>
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: white;
+            font-family: Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Navbar Header ala YouTube */
+        .header {
+            width: 100%;
+            height: 56px;
+            background-color: #0f0f0f;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff0000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo span {
+            color: white;
+            margin-left: 2px;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        /* Container Utama */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        /* Pemutar Video */
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        /* Info Judul & Channel */
+        .video-info {
+            margin-top: 12px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .channel-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #aaa;
+        }
+
+        .channel-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Deskripsi Ringkas */
+        .description {
+            background: #272727;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Bagian Komentar */
+        .comment-section {
+            margin-top: 24px;
+            border-top: 1px solid #333;
+            padding-top: 16px;
+        }
+
+        .comment-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .pinned-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .pinned-label {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            color: #f1f1f1;
+            white-space: pre-wrap;
+        }
+
+        .link-pinned {
+            color: #3ea6ff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .disabled-input {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 1px solid #333;
+            background: transparent;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="#" class="logo">XTMODEPRO<span>ID</span></a>
+</div>
+
+<div class="container">
+    <!-- Video Player dengan kontrol suara dan stop/pause bawaan -->
+    <div class="video-player">
+        <video id="modVideo" controls>
+            <source src="https://files.catbox.moe/6ue3za.mp4" type="video/mp4">
+            Browser Anda tidak mendukung tag video.
+        </video>
+    </div>
+
+    <div class="video-info">
+        <div class="video-title">XTMODEPRO MOD - New Display Preview</div>
+        <div class="channel-row">
+            <div class="avatar">XT</div>
+            <div class="channel-name">SYSTEM XTMODEPRO MODDER</div>
+        </div>
+        <div class="description">
+            <b>Preview Mod Menu Terbaru</b><br>
+            Cek link download di komentar yang di-pin di bawah.
+        </div>
+    </div>
+
+    <!-- Bagian Komentar -->
+    <div class="comment-section">
+        <div class="comment-header">1 Komentar</div>
+        
+        <!-- Input palsu yang tidak bisa diisi -->
+        <div class="disabled-input">Tambahkan komentar... (Dinonaktifkan)</div>
+
+        <!-- Komentar Di-Pin -->
+        <div class="pinned-box">
+            <div class="avatar" style="width:36px; height:36px;">XT</div>
+            <div class="comment-content">
+                <div class="pinned-label">📌 Di-pin oleh XTMODEPRO</div>
+                <div class="user-name">@XTMODEPRO_MODDER</div>
+                <div class="comment-text">[ALL LINK DOWNLOAD / SALURAN / CHAT ADMIN]
+LINK: <a href="https://xtmodepro.github.io/XTMODEPRO/New.html" class="link-pinned">https://xtmodepro.github.io/XTMODEPRO/New.html</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
