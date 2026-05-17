@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO PREMIUM MODS - Tutorial</title>
+    <!-- Font Keren -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome untuk Icon Telegram -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: #ffffff;
+            padding-bottom: 50px;
+        }
+
+        /* Header / Navbar */
+        header {
+            background-color: #141414;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #ff003c;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ff003c;
+            object-fit: cover;
+        }
+
+        .logo-area h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #ff003c, #ff5500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Video Player Area */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(255, 0, 60, 0.15);
+            border: 1px solid #222;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+        }
+
+        /* Info Video */
+        .video-info {
+            margin-top: 15px;
+            padding: 10px 5px;
+        }
+
+        .video-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        /* Channel Bar */
+        .channel-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #141414;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ff003c;
+            margin-bottom: 30px;
+        }
+
+        .channel-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .channel-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .channel-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .channel-subs {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Section Web Tools & Mod (Download Center) */
+        .download-section {
+            background: #141414;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #222;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ff003c;
+            border-bottom: 1px solid #222;
+            padding-bottom: 8px;
+        }
+
+        .download-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .download-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            transition: 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .download-card:hover {
+            border-color: #ff003c;
+            background: #252525;
+            transform: translateY(-2px);
+        }
+
+        .download-meta h4 {
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .download-meta p {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .btn-download {
+            background: #ff003c;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-download:hover {
+            background: #ff3366;
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
+        }
+
+        /* Community / Telegram Section */
+        .telegram-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .telegram-box {
+                grid-template-columns: 1fr;
+            }
+            .video-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        .tg-card {
+            background: linear-gradient(135deg, #1d2733, #151e27);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+            border: 1px solid #243447;
+        }
+
+        .tg-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tg-icon {
+            font-size: 2rem;
+            color: #24A1DE;
+        }
+
+        .tg-text h4 {
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .tg-text p {
+            font-size: 0.75rem;
+            color: #8fa6b8;
+        }
+
+        .btn-telegram {
+            background: #24A1DE;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-telegram:hover {
+            background: #31b3f2;
+            box-shadow: 0 0 10px rgba(36, 161, 222, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="logo-area">
+            <!-- Menggunakan Logo Resmi XTMODEPRO -->
+            <img src="https://raw.githubusercontent.com/XTMODEPRO/XTMODEPRO/main/Icom.png" alt="Logo XTMODEPRO">
+            <h1>XTMODEPRO</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        
+        <!-- Video Player -->
+        <div class="video-wrapper">
+            <video controls poster="https://raw.githubusercontent.com/XTMODEPRO/XTMODEPRO/main/Icom.png">
+                <source src="https://files.catbox.moe/ydii2g.mp4" type="video/mp4">
+                Browser kamu tidak mendukung pemutar video ini.
+            </video>
+        </div>
+
+        <!-- Judul & Info Video -->
+        <div class="video-info">
+            <h2 class="video-title">XTMODEPRO TUTORIAL PASANG CHEAT BYPASS</h2>
+            
+            <!-- Channel Info ala Premium Custom -->
+            <div class="channel-bar">
+                <div class="channel-profile">
+                    <img src="https://raw.githubusercontent.com/XTMODEPRO/XTMODEPRO/main/Icom.png" alt="Profile">
+                    <div>
+                        <div class="channel-name">XTMODEPRO PREMIUM MODS</div>
+                        <div class="channel-subs">Verified Modder • Developer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Web Tools & Mod (Download Center) -->
+        <div class="download-section">
+            <div class="section-title">
+                <i class="fa-solidfa-download"></i> WEB TOOLS & MOD SYSTEM
+            </div>
+            <div class="download-list">
+                
+                <!-- Link 1 -->
+                <div class="download-card">
+                    <div class="download-meta">
+                        <h4>XT VIRTUAL 32BIT V2</h4>
+                        <p>Status: Active • Cek Sistem V2</p>
+                    </div>
+                    <a href="https://xtmodepro.github.io/XTMODEPRO/cekv2.html" target="_blank" class="btn-download">Buka Link</a>
+                </div>
+
+                <!-- Link 2 -->
+                <div class="download-card">
+                    <div class="download-meta">
+                        <h4>APK DOWNLOAD SYSTEM</h4>
+                        <p>Status: Active • Unduh Paket APK</p>
+                    </div>
+                    <a href="https://xtmodepro.github.io/XTMODEPRO/cekz.html" target="_blank" class="btn-download">Buka Link</a>
+                </div>
+
+                <!-- Link 3 -->
+                <div class="download-card">
+                    <div class="download-meta">
+                        <h4>APK MODS BYPASS SYSTEM V19</h4>
+                        <p>Status: Premium • Bypass Aktif</p>
+                    </div>
+                    <a href="https://xtmodepro.github.io/XTMODEPRO/cekx.html" target="_blank" class="btn-download">Buka Link</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Komunitas / Group Telegram -->
+        <div class="download-section">
+            <div class="section-title">
+                <i class="fa-solid fa-users"></i> JOIN OUR COMMUNITY
+            </div>
+            <div class="telegram-box">
+                
+                <!-- Grup Chat -->
+                <div class="tg-card">
+                    <div class="tg-info">
+                        <i class="fa-brands fa-telegram tg-icon"></i>
+                        <div class="tg-text">
+                            <h4>Grup Chat VIP</h4>
+                            <p>Diskusi & Solusi Modding</p>
+                        </div>
+                    </div>
+                    <a href="https://t.me/XTMODEXVIP" target="_blank" class="btn-telegram">
+                        <i class="fa-brands fa-telegram"></i> Gabung Grup
+                    </a>
+                </div>
+
+                <!-- Grup Info -->
+                <div class="tg-card">
+                    <div class="tg-info">
+                        <i class="fa-brands fa-telegram tg-icon"></i>
+                        <div class="tg-text">
+                            <h4>Grup Info & Update</h4>
+                            <p>Update Cheat Bypass Terbaru</p>
+                        </div>
+                    </div>
+                    <a href="https://t.me/XTMODEPROCHEATBYPASS" target="_blank" class="btn-telegram" style="background: #0088cc;">
+                        <i class="fa-brands fa-telegram"></i> Cek Info Utama
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
