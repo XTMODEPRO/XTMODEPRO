@@ -3,289 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ XT-CORE DASHBOARD v3.0 ⚡</title>
+    <title>⚡ XT-HTML INJECTOR FULLSCREEN v2.0 ⚡</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Fira+Code:wght@400;600&display=swap');
         .font-cyber { font-family: 'Rajdhani', sans-serif; }
         .font-neon { font-family: 'Orbitron', sans-serif; }
-        .neon-text-red { text-shadow: 0 0 8px #ef4444; }
-        .neon-text-green { text-shadow: 0 0 8px #22c55e; }
+        .font-code { font-family: 'Fira Code', monospace; }
+        
+        /* Tombol kembali melayang dengan efek neon */
+        .btn-floating-back {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 999999;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-cyber min-h-screen pb-12">
+<body class="bg-slate-950 text-slate-100 font-cyber min-h-screen">
 
-    <header class="bg-slate-900 border-b border-cyan-500/30 py-4 px-6 mb-8 shadow-[0_4px_20px_rgba(6,182,212,0.15)] sticky top-0 z-50 backdrop-blur-md bg-opacity-95">
-        <div class="max-w-6xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
-            <h1 class="text-2xl font-neon font-bold tracking-widest text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-                <i class="fa-solid fa-gauge-high text-amber-400 animate-pulse"></i> XT-CORE v3.0
-            </h1>
-            <nav class="flex flex-wrap justify-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1">
-                <button onclick="pindahMenu('pinjaman')" id="btn-pinjaman" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-cyan-600 text-white shadow-[0_0_10px_rgba(6,182,212,0.4)]">
-                    <i class="fa-solid fa-hand-holding-dollar mr-1"></i>Pinjaman
-                </button>
-                <button onclick="pindahMenu('keuangan')" id="btn-keuangan" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-money-bill-transfer mr-1"></i>Arus Kas
-                </button>
-                <button onclick="pindahMenu('tools')" id="btn-tools" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-screwdrivers-wrench mr-1"></i>Bengkel Tools
-                </button>
-                <button onclick="pindahMenu('network')" id="btn-network" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-network-wired mr-1"></i>Net IP
-                </button>
-                <button onclick="pindahMenu('smali')" id="btn-smali" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-code mr-1"></i>Smali Calc
-                </button>
-            </nav>
-        </div>
-    </header>
+    <div id="wrapper-fullscreen" class="hidden fixed inset-0 w-full h-full bg-white z-[9999]">
+        <button onclick="keluarFullscreen()" class="btn-floating-back bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-rose-400">
+            <i class="fa-solid fa-arrow-left"></i> KEMBALI
+        </button>
+        <iframe id="frameFullscreen" class="w-full h-full border-none m-0 p-0 bg-white"></iframe>
+    </div>
 
-    <main class="max-w-6xl mx-auto px-4">
-        
-        <section id="menu-pinjaman" class="space-y-6">
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-md">
-                <h2 class="text-lg font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-sm"></i> TAMBAH CATATAN DEBITUR BARU
-                </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div class="relative">
-                        <i class="fa-solid fa-user absolute left-3 top-3.5 text-slate-500"></i>
-                        <input type="text" id="pinjamNama" placeholder="Nama Lengkap Peminjam" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-500 transition font-medium">
-                    </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-wallet absolute left-3 top-3.5 text-slate-500"></i>
-                        <input type="number" id="pinjamUang" placeholder="Jumlah Nominal (Angka)" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-500 transition font-mono">
-                    </div>
-                </div>
-                <button onclick="tambahPinjaman()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 rounded-xl transition duration-300 shadow-[0_4px_15px_rgba(6,182,212,0.3)] flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-floppy-disk"></i> INJECT DATA PINJAMAN
-                </button>
-            </div>
 
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                <h2 class="text-md font-bold text-slate-400 mb-4 tracking-wider"><i class="fa-solid fa-database mr-2"></i>DATA REGISTER UTANG ACTIVE</h2>
-                <div id="listPinjaman" class="space-y-3"></div>
-            </div>
-        </section>
-
-        <section id="menu-keuangan" class="hidden space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-slate-900 border border-emerald-500/20 rounded-2xl p-5 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-bold text-emerald-500 tracking-wider">TOTAL UANG MASUK (+)</p>
-                        <p id="totalMasuk" class="text-2xl font-neon font-bold text-emerald-400 mt-1 neon-text-green">Rp 0</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xl border border-emerald-500/20"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                </div>
-                <div class="bg-slate-900 border border-rose-500/20 rounded-2xl p-5 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-bold text-rose-500 tracking-wider">TOTAL UANG KELUAR (-)</p>
-                        <p id="totalKeluar" class="text-2xl font-neon font-bold text-rose-400 mt-1 neon-text-red">Rp 0</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 text-xl border border-rose-500/20"><i class="fa-solid fa-arrow-trend-down"></i></div>
+    <div id="menu-utama" class="flex flex-col justify-between min-h-screen">
+        <header class="bg-slate-900 border-b border-cyan-500/30 py-4 px-6 shadow-[0_4px_20px_rgba(6,182,212,0.15)]">
+            <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+                <h1 class="text-2xl font-neon font-bold tracking-widest text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+                    <i class="fa-solid fa-expand text-amber-400 mr-1 animate-pulse"></i> XT-FULL INJECTOR
+                </h1>
+                <div class="flex items-center gap-2 text-xs font-code text-slate-400 bg-slate-950 px-3 py-1.5 border border-slate-800 rounded-lg">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                    <span>READY TO RUN</span>
                 </div>
             </div>
+        </header>
 
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                <h2 class="text-lg font-bold text-cyan-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-money-bill-growth"></i> INPUT LOG KEUANGAN</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <input type="text" id="kasKeterangan" placeholder="Keterangan (Contoh: Beli Bensin)" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:outline-none focus:border-cyan-500 transition">
-                    <input type="number" id="kasJumlah" placeholder="Nominal Uang" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:outline-none focus:border-cyan-500 transition font-mono">
-                    <select id="kasJenis" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:outline-none focus:border-cyan-500 transition font-bold">
-                        <option value="masuk" class="text-emerald-400">🟢 Uang Masuk (+)</option>
-                        <option value="keluar" class="text-rose-400">🔴 Uang Keluar (-)</option>
-                    </select>
-                </div>
-                <button onclick="tambahKas()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-plus"></i> COMMIT TRANSAKSI
-                </button>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                <h2 class="text-md font-bold text-slate-400 mb-4 tracking-wider"><i class="fa-solid fa-clock-rotate-left mr-2"></i>RIWAYAT TRANSAKSI KEUANGAN</h2>
-                <div id="listKas" class="space-y-2"></div>
-            </div>
-        </section>
-
-        <section id="menu-tools" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-neon font-bold text-amber-400 flex items-center gap-2">
-                            <i class="fa-solid fa-gears animate-spin"></i> KARBURATOR TUNING STAGE 1
-                        </h3>
-                        <span class="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 border border-amber-500/20 rounded font-mono">PJ / MJ Engine</span>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-1">
-                                <span>PILOT JET</span> <span id="valPilot" class="text-amber-400 font-mono">35 mm</span>
-                            </div>
-                            <input type="range" id="inputPilot" min="15" max="60" value="35" oninput="hitungKarbu()" class="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-500">
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-1">
-                                <span>MAIN JET</span> <span id="valMain" class="text-amber-400 font-mono">110 mm</span>
-                            </div>
-                            <input type="range" id="inputMain" min="80" max="180" value="110" oninput="hitungKarbu()" class="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-500">
-                        </div>
-                    </div>
-                    <div class="mt-6 p-4 bg-slate-950 border border-slate-800 rounded-xl text-center">
-                        <p id="statusKarbu" class="text-md font-bold text-emerald-400">✓ Setelan Stabil Langsam Gurih</p>
+        <main class="max-w-4xl w-full mx-auto p-4 flex-grow flex flex-col justify-center my-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden flex flex-col gap-4">
+                <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-cyan-500 via-blue-500 to-transparent"></div>
+                
+                <div class="flex justify-between items-center">
+                    <h2 class="text-md font-bold text-slate-300 tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-paste text-cyan-400"></i> PASTE KODE HTML KAMU DI BAWAH:
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="clearInput()" class="px-3 py-1 text-xs font-code bg-slate-950 border border-slate-800 text-rose-400 hover:bg-rose-500/10 rounded-lg transition">
+                            <i class="fa-solid fa-eraser"></i> Clear
+                        </button>
+                        <button onclick="loadSample()" class="px-3 py-1 text-xs font-code bg-slate-950 border border-slate-800 text-amber-400 hover:bg-amber-500/10 rounded-lg transition">
+                            <i class="fa-solid fa-file-code"></i> Contoh
+                        </button>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 border border-cyan-500/30 rounded-2xl p-6">
-                    <h3 class="text-lg font-neon font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-wrench"></i> QUICK TOOLS CALC
-                    </h3>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="stroke" placeholder="Stroke (mm)" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-white">
-                            <input type="number" id="bore" placeholder="Bore (mm)" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-white">
-                        </div>
-                        <button onclick="hitungCC()" class="w-full bg-slate-800 hover:bg-slate-700 text-xs font-bold text-cyan-400 py-2 rounded-lg border border-cyan-500/20 transition">⚡ Hitung Volume CC</button>
-                        <p id="hasilCC" class="text-sm font-bold text-slate-300 mt-2 font-mono text-center"></p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="menu-network" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-blue-500/30 rounded-2xl p-6">
-                <h3 class="text-lg font-neon font-bold text-blue-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-network-wired"></i> NETWORK ENVIRONMENT DETECTOR
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
-                    <div>
-                        <span class="text-xs text-slate-500 block font-mono">CURRENT IP ADDRESS :</span>
-                        <span id="ipDisplay" class="text-md font-bold font-neon text-cyan-400">Ready</span>
-                    </div>
-                    <div>
-                        <span class="text-xs text-slate-500 block font-mono">STATUS KONEKSI :</span>
-                        <span id="netStatus" class="text-md font-bold text-emerald-400">ONLINE</span>
-                    </div>
-                </div>
-                <button onclick="checkNetworkInfo()" class="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition text-sm">
-                    <i class="fa-solid fa-rotate mr-1"></i> CHECK / REFRESH NETWORK STATUS
+                <textarea id="rawHtmlCode" placeholder="" class="w-full h-80 bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-code text-emerald-400 focus:outline-none focus:border-cyan-500 transition resize-none leading-relaxed shadow-inner"></textarea>
+                
+                <button onclick="masukFullscreen()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl transition duration-300 shadow-[0_4px_15px_rgba(6,182,212,0.3)] flex items-center justify-center gap-2 text-md tracking-wider font-neon">
+                    <i class="fa-solid fa-play animate-bounce text-xs"></i> LAUNCH SYSTEM (FULL SCREEN)
                 </button>
             </div>
-        </section>
+        </main>
 
-        <section id="menu-smali" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-purple-500/30 rounded-2xl p-6">
-                <h3 class="text-lg font-neon font-bold text-purple-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-code"></i> SMALI CONSTANT & HEX CONVERTER
-                </h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1">INPUT ANGKA DESIMAL</label>
-                        <input type="number" id="inputDecimal" oninput="convertHex()" placeholder="Contoh: 65" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white font-mono focus:outline-none focus:border-purple-500">
-                    </div>
-                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl grid grid-cols-2 gap-4 font-mono">
-                        <div>
-                            <span class="text-[10px] text-slate-500 block">HEXADECIMAL FORM :</span>
-                            <span id="hexOutput" class="text-purple-400 font-bold text-md">0x0</span>
-                        </div>
-                        <div>
-                            <span class="text-[10px] text-slate-500 block">SMALI STYLE CONST :</span>
-                            <span id="smaliOutput" class="text-amber-400 font-bold text-xs">const/4 v0, 0x0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
+        <footer class="text-center py-4 text-[10px] text-slate-600 font-mono tracking-widest uppercase border-t border-slate-900">
+            &copy; 2026 XTMODEPRO // FULLSCREEN VIEW SYSTEM ENGINE
+        </footer>
+    </div>
 
     <script>
-        // INIT DATA DATABASE GLOBAL
-        let dataPinjaman = [];
-        let dataKas = [];
-
-        // LOAD DATA AMAN SETELAH WINDOW SELESAI LOADING
-        window.onload = function() {
-            try {
-                dataPinjaman = JSON.parse(localStorage.getItem('neo_pinjaman')) || [];
-                dataKas = JSON.parse(localStorage.getItem('neo_kas')) || [];
-            } catch (e) {
-                dataPinjaman = [];
-                dataKas = [];
-            }
-            tampilkanPinjaman();
-            hitungTotalKas();
-            hitungKarbu();
-        };
-
-        // MENU NAVIGATION SYSTEM
-        function pindahMenu(menu) {
-            const listMenu = ['pinjaman', 'keuangan', 'tools', 'network', 'smali'];
-            listMenu.forEach(m => {
-                document.getElementById('menu-' + m).classList.add('hidden');
-                document.getElementById('btn-' + m).className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
-            });
-
-            document.getElementById('menu-' + menu).classList.remove('hidden');
+        // FUNGSI UTAMA: MENYUNTIKKAN KODE DAN MEMBUKA MODE FULLSCREEN
+        function masukFullscreen() {
+            const kodeStr = document.getElementById('rawHtmlCode').value.trim();
             
-            if(menu === 'pinjaman') {
-                document.getElementById('btn-pinjaman').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-cyan-600 text-white shadow-[0_0_10px_rgba(6,182,212,0.4)]';
-            } else if(menu === 'keuangan') {
-                document.getElementById('btn-keuangan').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-emerald-600 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)]';
-                hitungTotalKas();
-            } else if(menu === 'tools') {
-                document.getElementById('btn-tools').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-amber-600 text-white shadow-[0_0_10px_rgba(245,158,11,0.4)]';
-            } else if(menu === 'network') {
-                document.getElementById('btn-network').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.4)]';
-            } else if(menu === 'smali') {
-                document.getElementById('btn-smali').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-purple-600 text-white shadow-[0_0_10px_rgba(147,51,234,0.4)]';
-            }
-        }
-
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        }
-
-        // ================= LOGIC MENU 1: PINJAMAN =================
-        function tampilkanPinjaman() {
-            const wadah = document.getElementById('listPinjaman');
-            if(!wadah) return;
-            wadah.innerHTML = '';
-
-            if (dataPinjaman.length === 0) {
-                wadah.innerHTML = `<p class="text-slate-500 text-center text-sm py-4"><i class="fa-solid fa-ban mr-2"></i> Database Kosong / Tidak Ada Pinjaman Aktif.</p>`;
+            if (!kodeStr) {
+                alert('⚠️ Gagal mengeksekusi! Harap paste kode HTML terlebih dahulu!');
                 return;
             }
 
-            dataPinjaman.forEach((item, index) => {
-                const isLunas = item.lunas;
-                const warnaTombol = isLunas ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500 text-white font-bold shadow-[0_0_10px_rgba(239,68,68,0.4)]';
-                const teksTombol = isLunas ? '<i class="fa-solid fa-circle-check mr-1"></i> Lunas' : '<i class="fa-solid fa-triangle-exclamation mr-1"></i> BELUM BAYAR';
+            const wrapper = document.getElementById('wrapper-fullscreen');
+            const frame = document.getElementById('frameFullscreen');
+            
+            // Tampilkan container fullscreen, sembunyikan dashboard utama
+            wrapper.classList.remove('hidden');
+            document.getElementById('menu-utama').classList.add('hidden');
 
-                wadah.innerHTML += `
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-xl bg-slate-950 border-slate-800 gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-slate-400 border border-slate-800">
-                                <i class="fa-solid fa-user-ninja"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-md tracking-wide ${isLunas ? 'line-through text-slate-500' : 'text-slate-200'}">${item.nama}</p>
-                                <p class="text-xs font-mono tracking-wider ${isLunas ? 'text-slate-500' : 'text-cyan-400'}">${formatRupiah(item.uang)}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 justify-end">
-                            <button onclick="togglePinjaman(${index})" class="text-xs px-3 py-2 rounded-lg transition uppercase tracking-wider ${warnaTombol}">
-                                ${teksTombol}
-                            </button>
-                            <button onclick="hapusPinjaman(${index})" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-rose-400 p-2 rounded-lg transition">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+            try {
+                // Proses render kode ke dalam frame secara lokal
+                const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                frameDoc.open();
+                frameDoc.write(kodeStr);
+                frameDoc.close();
+            } catch (error) {
+                alert('🚨 Terjadi error saat memproses struktur kode!');
+                console.error(error);
+            }
         }
 
-        function tambahPinjaman() {
-            const nama = document.getElementById('pinjamNama').value.trim();
-            const uang = document.getElementByI
+        // FUNGSI KEMBALI KEU MENU UTAMA
+        function keluarFullscreen() {
+            const wrapper = document.getElementById('wrapper-fullscreen');
+            const frame = document.getElementById('frameFullscreen');
+            
+            // Sembunyikan fullscreen, munculkan kembali dashboard utama
+            wrapper.classList.add('hidden');
+            document.getElementById('menu-utama').classList.remove('hidden');
+
+            // Kosongkan isi frame agar memori perangkat kembali bersih dan hemat ram
+            const frameDoc = frame.contentDocument || frame.contentWindow.document;
+            frameDoc.open();
+            frameDoc.write('');
+            frameDoc.close();
+        }
+
+        // FUNGSI MENGHAPUS INPUT
+        function clearInput() {
+            document.getElementById('rawHtmlCode').value = '';
+        }
+
+        // KODE CONTOH BIAR KAMU BISA LANGSUNG TES BEGITU DIBUKA
+        function loadSample() {
+            document.getElementById('rawHtmlCode').value = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Situs Tes</title>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding-top: 15%; }
+        h1 { color: #00ffcc; font-size: 3rem; text-shadow: 0 0 10px #00ffcc; }
+        p { color: #888; }
+    </style>
+</head>
+<body>
+    <h1>SYSTEM SUKSES INJECT</h1>
+    <p>Ini adalah tampilan halaman penuh (Full-Screen) dari HTML yang kamu paste.</p>
+</body>
+</html>`;
+        }
+    </script>
+</body>
+</html>
