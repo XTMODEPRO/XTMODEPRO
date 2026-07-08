@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ XTMODEPRO ACCESS PORTAL v3.6 ⚡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        .font-cyber { font-family: 'Rajdhani', sans-serif; }
+        .font-neon { font-family: 'Orbitron', sans-serif; }
+        .neon-glow-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+        .neon-text-red { text-shadow: 0 0 8px #ef4444; }
+        .neon-text-green { text-shadow: 0 0 8px #22c55e; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-cyber min-h-screen flex justify-center items-center p-4">
+
+    <div id="loginWrapper" class="bg-slate-900 border border-slate-800 p-8 rounded-2xl text-center width-[320px] max-w-sm shadow-[0_0_30px_rgba(6,182,212,0.1)] backdrop-blur-md">
+        <h1 class="text-3xl font-neon font-bold tracking-widest text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] mb-6">
+            XTMODEPRO
+        </h1>
+        <div class="space-y-4">
+            <div class="relative">
+                <i class="fa-solid fa-user absolute left-3 top-3.5 text-slate-500"></i>
+                <input type="text" id="username" placeholder="USERNAME" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-500 transition font-medium tracking-wide">
+            </div>
+            <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3 top-3.5 text-slate-500"></i>
+                <input type="password" id="password" placeholder="PASSWORD" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-500 transition font-medium tracking-wide">
+            </div>
+        </div>
+        <button onclick="checkLogin()" class="w-full mt-6 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 rounded-xl transition duration-300 shadow-[0_4px_15px_rgba(6,182,212,0.3)] flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-to-bracket"></i> ACCESS PORTAL
+        </button>
+    </div>
+
+    <div id="contentWrapper" class="hidden w-full max-w-4xl flex-col min-h-screen py-4">
+        
+        <header class="bg-slate-900 border border-cyan-500/30 rounded-2xl py-4 px-6 mb-6 shadow-[0_4px_20px_rgba(6,182,212,0.15)] flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl font-neon font-bold tracking-widest text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+                <i class="fa-solid fa-circle-radiation text-amber-400 animate-spin mr-1"></i> XT-CORE PREMIUM
+            </h1>
+            
+            <nav class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1 flex-wrap justify-center">
+                <button onclick="switchTab('tab-manusia')" id="btn-manusia" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-purple-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+                    <i class="fa-solid fa-user text-xs mr-1"></i> Manusia Center
+                </button>
+                <button onclick="switchTab('tab-anime')" id="btn-anime" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-ghost text-xs mr-1"></i> Anime Center
+                </button>
+                <button onclick="switchTab('tab-network')" id="btn-network" class="px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-network-wired text-xs mr-1"></i> Network Status
+                </button>
+            </nav>
+        </header>
+
+        <main id="tab-manusia" class="space-y-6 active-content-panel">
+            <div class="bg-slate-900/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_4px_15px_rgba(168,85,247,0.05)]">
+                <h2 class="text-sm font-bold text-purple-400 mb-4 tracking-wider uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-user-ninja text-purple-500"></i> Injector Controls (REAL / MANUSIA CORES)
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <button onclick="loadContent(event, 'real_ass', 'Real Ass')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-apple-whole text-lg text-purple-500"></i> Real Ass
+                    </button>
+                    <button onclick="loadContent(event, 'real_thigh', 'Real Thigh')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-child-dress text-lg text-purple-500"></i> Real Thigh
+                    </button>
+                    <button onclick="loadContent(event, 'real_panties', 'Real Panties')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-person-dress text-lg text-purple-500"></i> Real Panties
+                    </button>
+                    <button onclick="loadContent(event, 'real_boobs', 'Real Boobs')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-circle-nodes text-lg text-purple-500"></i> Real Boobs
+                    </button>
+                    <button onclick="loadContent(event, 'real_feet', 'Real Feet')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-socks text-lg text-purple-500"></i> Real Feet
+                    </button>
+                    <button onclick="loadContent(event, 'real_blowjob', 'Real Blowjob')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-droplet text-lg text-purple-500"></i> Real Blowjob
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <main id="tab-anime" class="hidden space-y-6 active-content-panel">
+            <div class="bg-slate-900/80 border border-pink-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_4px_15px_rgba(236,72,153,0.05)]">
+                <h2 class="text-sm font-bold text-pink-400 mb-4 tracking-wider uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-ghost text-pink-500"></i> Injector Controls (ANIME / HENTAI CORES)
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <button onclick="loadContent(event, 'gangbang', 'Gangbang')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-lg text-pink-500"></i> Gangbang
+                    </button>
+                    <button onclick="loadContent(event, 'kasedaiki', 'Kasedaiki')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-paw text-lg text-pink-500"></i> Kasedaiki
+                    </button>
+                    <button onclick="loadContent(event, 'hentai', 'Hentai Core')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-bolt text-lg text-pink-500"></i> Hentai Core
+                    </button>
+                    <button onclick="loadContent(event, 'paizuri', 'Paizuri')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-heart text-lg text-pink-500"></i> Paizuri
+                    </button>
+                    <button onclick="loadContent(event, 'anime_pussy', 'Anime Pussy')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-circle-dot text-lg text-pink-500"></i> Anime Pussy
+                    </button>
+                    <button onclick="loadContent(event, 'eroNeko', 'Ero Neko')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-cat text-lg text-pink-500"></i> Ero Neko
+                    </button>
+                    <button onclick="loadContent(event, 'anime_anal', 'Anime Anal')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-biohazard text-lg text-pink-500"></i> Anime Anal
+                    </button>
+                    <button onclick="loadContent(event, 'yuri', 'Yuri Hentai')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-venus-double text-lg text-pink-500"></i> Yuri Hentai
+                    </button>
+                    <button onclick="loadContent(event, 'swimsuit', 'Swimsuit Anime')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-person-swimming text-lg text-pink-500"></i> Swimsuit
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <div id="outputContainer" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[350px] relative overflow-hidden mb-6">
+            <div id="activeCoreTitle" class="text-xs font-neon text-cyan-400 tracking-widest uppercase mb-4 hidden border-b border-cyan-500/20 pb-2 w-full text-center">
+                CORE: <span id="coreNameText">NONE</span>
+            </div>
+
+            <div id="apiLoader" class="hidden absolute flex flex-col items-center gap-2">
+                <i class="fa-solid fa-spinner text-3xl text-cyan-400 animate-spin"></i>
+                <p class="text-xs font-mono tracking-widest text-slate-400">INJECTING DATA PACKETS...</p>
+            </div>
+            
+            <div id="placeholderText" class="text-slate-500 text-center text-sm py-12">
+                <i class="fa-solid fa-layer-group text-3xl mb-3 block text-slate-700"></i>
+                Silakan pilih salah satu core menu premium di atas untuk memuat data.
+            </div>
+            
+            <img id="imageResult" src="" alt="Hasil gambar" class="max-w-full max-h-[60vh] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-800/50 hidden">
+        </div>
+
+        <main id="tab-network" class="hidden space-y-6">
+            <div class="bg-slate-900 border border-blue-500/30 rounded-2xl p-6">
+                <h3 class="text-lg font-neon font-bold text-blue-400 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired"></i> ENVIRONMENT TUNNEL DETECTOR
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div>
+                        <span class="text-xs text-slate-500 block font-mono">PROXY / IP ADDRESS :</span>
+                        <span id="ipDisplay" class="text-md font-bold font-neon text-cyan-400">Not Checked</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block font-mono">TUNNEL STATUS :</span>
+                        <span id="netStatus" class="text-md font-bold text-emerald-400">CONNECTED</span>
+                    </div>
+                </div>
+                <button onclick="checkNetworkInfo()" class="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition text-sm">
+                    <i class="fa-solid fa-rotate mr-1"></i> QUERY SYSTEM ENVIRONMENT
+                </button>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        // LOGIN GATEWAY SYSTEM
+        function checkLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if (user === "AdminXT" && pass === "VIP") {
+                document.body.className = "bg-slate-950 text-slate-100 font-cyber min-h-screen pb-12 block flex justify-center";
+                document.getElementById('loginWrapper').style.display = 'none';
+                
+                const mainArea = document.getElementById('contentWrapper');
+                mainArea.classList.remove('hidden');
+                mainArea.classList.add('flex');
+                
+                checkNetworkInfo();
+            } else {
+                alert("🔴 ACCESS DENIED: Kredensial Salah!");
+            }
+        }
+
+        // TAB SWITCH NAVIGATION SYSTEM (3 NAVIGASI UTAMA)
+        function switchTab(targetTab) {
+            const tabs = ['tab-manusia', 'tab-anime', 'tab-network'];
+            tabs.forEach(tab => {
+                document.getElementById(tab).classList.add('hidden');
+            });
+            document.getElementById(targetTab).classList.remove('hidden');
+
+            // Reset style navigasi tombol atas
+            document.getElementById('btn-manusia').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
+            document.getElementById('btn-anime').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
+            document.getElementById('btn-network').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
+
+            // Kondisi tampilan kontainer gambar
+            const outputBox = document.getElementById('outputContainer');
+            if(targetTab === 'tab-network') {
+                outputBox.classList.add('hidden');
+                document.getElementById('btn-network').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.4)]';
+            } else {
+                outputBox.classList.remove('hidden');
+                if(targetTab === 'tab-manusia') {
+                    document.getElementById('btn-manusia').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-purple-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.4)]';
+                } else if(targetTab === 'tab-anime') {
+                    document.getElementById('btn-anime').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 bg-pink-600 text-white shadow-[0_0_10px_rgba(236,72,153,0.4)]';
+                }
+            }
+        }
+
+        // CONTENT CORE FETCHER LOGIC
+        async function loadContent(e, type, readableName) {
+            const display = document.getElementById('imageResult');
+            const loader = document.getElementById('apiLoader');
+            const placeholder = document.getElementById('placeholderText');
+            const titleContainer = document.getElementById('activeCoreTitle');
+            const titleText = document.getElementById('coreNameText');
+            
+            // Perbarui Judul agar menyatu dengan hasil
+            titleText.innerText = readableName;
+            titleContainer.classList.remove('hidden');
+            
+            // Reset active style semua button menu injector
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.classList.remove('border-pink-500', 'text-pink-400', 'border-purple-500', 'text-purple-400', 'bg-slate-900');
+                btn.classList.add('border-slate-800', 'text-slate-300', 'bg-slate-950');
+            });
+            
+            // Highlight tombol aktif berdasarkan cluster
+            if (e && e.currentTarget) {
+                e.currentTarget.classList.remove('border-slate-800', 'text-slate-300', 'bg-slate-950');
+                if (type.startsWith('real_')) {
+                    e.currentTarget.classList.add('border-purple-500', 'text-purple-400', 'bg-slate-900');
+                } else {
+                    e.currentTarget.classList.add('border-pink-500', 'text-pink-400', 'bg-slate-900');
+                }
+            }
+            
+            // Database routing parameter query API nekobot publik terverifikasi
+            const apis = {
+                // KATEGORI MANUSIA (REAL)
+                'real_ass': 'https://nekobot.xyz/api/image?type=ass',
+                'real_thigh': 'https://nekobot.xyz/api/image?type=thigh',
+                'real_panties': 'https://nekobot.xyz/api/image?type=4k',
+                'real_boobs': 'https://nekobot.xyz/api/image?type=boobs',
+                'real_feet': 'https://nekobot.xyz/api/image?type=feet',
+                'real_blowjob': 'https://nekobot.xyz/api/image?type=pgif', // Endpoint visual real-life / pgif
+
+                // KATEGORI ANIME (HENTAI)
+                'gangbang': 'https://nekobot.xyz/api/image?type=tentacle',
+                'kasedaiki': 'https://nekobot.xyz/api/image?type=hkitsune',
+                'hentai': 'https://nekobot.xyz/api/image?type=hentai',
+                'paizuri': 'https://nekobot.xyz/api/image?type=paizuri',
+                'anime_pussy': 'https://nekobot.xyz/api/image?type=pussy', 
+                'eroNeko': 'https://nekobot.xyz/api/image?type=hneko',
+                'anime_anal': 'https://nekobot.xyz/api/image?type=anal',
+                'yuri': 'https://nekobot.xyz/api/image?type=kemonomimi',
+                'swimsuit': 'https://nekobot.xyz/api/image?type=hthigh'
+            };
+
+            try {
+                placeholder.style.display = 'none';
+                display.style.display = 'none';
+                loader.classList.remove('hidden');
+                
+                const response = await fetch(apis[type]);
+                if (!response.ok) throw new Error("API Failure");
+                
+                const data = await response.json();
+                
+                if (data.message) {
+                    display.src = data.message;
+                    display.onload = function() {
+                        loader.classList.add('hidden');
+                        display.style.display = 'block';
+                    }
+                } else {
+                    alert("Gagal merespon paket data dari core API.");
+                    loader.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error(error);
+                loader.classList.add('hidden');
+                placeholder.style.display = 'block';
+                titleContainer.classList.add('hidden');
+                alert("Koneksi API Gagal. Server sedang mengalami antrean padat, silakan coba lagi.");
+            }
+        }
+
+        // UTILITY: NETWORK CHECKER LOGIC
+        function checkNetworkInfo() {
+            const ipDisplay = document.getElementById('ipDisplay');
+            const netStatus = document.getElementById('netStatus');
+            
+            if(navigator.onLine) {
+                netStatus.innerText = "ONLINE";
+                netStatus.className = "text-md font-bold text-emerald-400 neon-text-green";
+                ipDisplay.innerText = "TUNNELING...";
+                
+                fetch('https://api.ipify.org?format=json')
+                    .then(r => r.json())
+                    .then(data => { ipDisplay.innerText = data.ip; })
+                    .catch(() => { ipDisplay.innerText = "RESOLVE ERROR"; });
+            } else {
+                netStatus.innerText = "OFFLINE";
+                netStatus.className = "text-md font-bold text-rose-500 neon-text-red";
+                ipDisplay.innerText = "DISCONNECTED";
+            }
+        }
+    </script>
+</body>
+</html>
