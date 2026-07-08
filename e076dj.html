@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
+<!DOCTYPE html><html lang="id"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ XTMODEPRO ACCESS PORTAL v3.6 ⚡</title>
@@ -65,8 +63,14 @@
                     <button onclick="loadContent(event, 'real_ass', 'Real Ass')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
                         <i class="fa-solid fa-apple-whole text-lg text-purple-500"></i> Real Ass
                     </button>
+                    <button onclick="loadContent(event, 'anime_anal', 'Anal')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-biohazard text-lg text-purple-500"></i> Anal
+                    </button>
                     <button onclick="loadContent(event, 'real_thigh', 'Real Thigh')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
                         <i class="fa-solid fa-child-dress text-lg text-purple-500"></i> Real Thigh
+                    </button>
+                    <button onclick="loadContent(event, 'anime_pussy', 'Pussy')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-circle-dot text-lg text-purple-500"></i> Pussy
                     </button>
                     <button onclick="loadContent(event, 'real_panties', 'Real Panties')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
                         <i class="fa-solid fa-person-dress text-lg text-purple-500"></i> Real Panties
@@ -102,14 +106,8 @@
                     <button onclick="loadContent(event, 'paizuri', 'Paizuri')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
                         <i class="fa-solid fa-heart text-lg text-pink-500"></i> Paizuri
                     </button>
-                    <button onclick="loadContent(event, 'anime_pussy', 'Anime Pussy')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
-                        <i class="fa-solid fa-circle-dot text-lg text-pink-500"></i> Anime Pussy
-                    </button>
                     <button onclick="loadContent(event, 'eroNeko', 'Ero Neko')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
                         <i class="fa-solid fa-cat text-lg text-pink-500"></i> Ero Neko
-                    </button>
-                    <button onclick="loadContent(event, 'anime_anal', 'Anime Anal')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
-                        <i class="fa-solid fa-biohazard text-lg text-pink-500"></i> Anime Anal
                     </button>
                     <button onclick="loadContent(event, 'yuri', 'Yuri Hentai')" class="menu-btn py-3 px-2 text-xs font-bold rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500 hover:text-pink-400 text-slate-300 transition-all duration-200 flex flex-col items-center gap-2">
                         <i class="fa-solid fa-venus-double text-lg text-pink-500"></i> Yuri Hentai
@@ -163,7 +161,6 @@
     </div>
 
     <script>
-        // LOGIN GATEWAY SYSTEM
         function checkLogin() {
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
@@ -182,7 +179,6 @@
             }
         }
 
-        // TAB SWITCH NAVIGATION SYSTEM (3 NAVIGASI UTAMA)
         function switchTab(targetTab) {
             const tabs = ['tab-manusia', 'tab-anime', 'tab-network'];
             tabs.forEach(tab => {
@@ -190,12 +186,10 @@
             });
             document.getElementById(targetTab).classList.remove('hidden');
 
-            // Reset style navigasi tombol atas
             document.getElementById('btn-manusia').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
             document.getElementById('btn-anime').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
             document.getElementById('btn-network').className = 'px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 text-slate-400 hover:text-slate-200';
 
-            // Kondisi tampilan kontainer gambar
             const outputBox = document.getElementById('outputContainer');
             if(targetTab === 'tab-network') {
                 outputBox.classList.add('hidden');
@@ -210,7 +204,6 @@
             }
         }
 
-        // CONTENT CORE FETCHER LOGIC
         async function loadContent(e, type, readableName) {
             const display = document.getElementById('imageResult');
             const loader = document.getElementById('apiLoader');
@@ -218,37 +211,31 @@
             const titleContainer = document.getElementById('activeCoreTitle');
             const titleText = document.getElementById('coreNameText');
             
-            // Perbarui Judul agar menyatu dengan hasil
             titleText.innerText = readableName;
             titleContainer.classList.remove('hidden');
             
-            // Reset active style semua button menu injector
             document.querySelectorAll('.menu-btn').forEach(btn => {
                 btn.classList.remove('border-pink-500', 'text-pink-400', 'border-purple-500', 'text-purple-400', 'bg-slate-900');
                 btn.classList.add('border-slate-800', 'text-slate-300', 'bg-slate-950');
             });
             
-            // Highlight tombol aktif berdasarkan cluster
             if (e && e.currentTarget) {
                 e.currentTarget.classList.remove('border-slate-800', 'text-slate-300', 'bg-slate-950');
-                if (type.startsWith('real_')) {
+                // Logika warna: jika real_ atau item yang diubah (pussy/anal), pakai purple
+                if (type.startsWith('real_') || type === 'anime_pussy' || type === 'anime_anal') {
                     e.currentTarget.classList.add('border-purple-500', 'text-purple-400', 'bg-slate-900');
                 } else {
                     e.currentTarget.classList.add('border-pink-500', 'text-pink-400', 'bg-slate-900');
                 }
             }
             
-            // Database routing parameter query API nekobot publik terverifikasi
             const apis = {
-                // KATEGORI MANUSIA (REAL)
                 'real_ass': 'https://nekobot.xyz/api/image?type=ass',
                 'real_thigh': 'https://nekobot.xyz/api/image?type=thigh',
                 'real_panties': 'https://nekobot.xyz/api/image?type=4k',
                 'real_boobs': 'https://nekobot.xyz/api/image?type=boobs',
                 'real_feet': 'https://nekobot.xyz/api/image?type=feet',
-                'real_blowjob': 'https://nekobot.xyz/api/image?type=pgif', // Endpoint visual real-life / pgif
-
-                // KATEGORI ANIME (HENTAI)
+                'real_blowjob': 'https://nekobot.xyz/api/image?type=pgif',
                 'gangbang': 'https://nekobot.xyz/api/image?type=tentacle',
                 'kasedaiki': 'https://nekobot.xyz/api/image?type=hkitsune',
                 'hentai': 'https://nekobot.xyz/api/image?type=hentai',
@@ -281,15 +268,13 @@
                     loader.classList.add('hidden');
                 }
             } catch (error) {
-                console.error(error);
                 loader.classList.add('hidden');
                 placeholder.style.display = 'block';
                 titleContainer.classList.add('hidden');
-                alert("Koneksi API Gagal. Server sedang mengalami antrean padat, silakan coba lagi.");
+                alert("Koneksi API Gagal.");
             }
         }
 
-        // UTILITY: NETWORK CHECKER LOGIC
         function checkNetworkInfo() {
             const ipDisplay = document.getElementById('ipDisplay');
             const netStatus = document.getElementById('netStatus');
@@ -297,18 +282,11 @@
             if(navigator.onLine) {
                 netStatus.innerText = "ONLINE";
                 netStatus.className = "text-md font-bold text-emerald-400 neon-text-green";
-                ipDisplay.innerText = "TUNNELING...";
-                
                 fetch('https://api.ipify.org?format=json')
                     .then(r => r.json())
                     .then(data => { ipDisplay.innerText = data.ip; })
                     .catch(() => { ipDisplay.innerText = "RESOLVE ERROR"; });
-            } else {
-                netStatus.innerText = "OFFLINE";
-                netStatus.className = "text-md font-bold text-rose-500 neon-text-red";
-                ipDisplay.innerText = "DISCONNECTED";
             }
         }
     </script>
-</body>
-</html>
+</body></html>
