@@ -50,7 +50,7 @@
 <script>
     window.onload = function() {
         // Target URL
-        const targetUrl = "https://xtmodepro.github.io/XTMODEPRO/t2ca8.html";
+        const targetUrl = "LINKTARGET";
 
         // Cek apakah script iklan di atas berhasil dimuat atau diblokir
         setTimeout(function() {
