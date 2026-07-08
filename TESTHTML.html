@@ -2,28 +2,33 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚡ XT-HTML INJECTOR FULLSCREEN ⚡</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>⚡ XT-HTML INJECTOR FULLSCREEN v4.0 ⚡</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Fira+Code:wght@400;600&display=swap');
         
-        /* Kunci total pergerakan halaman untuk fix area putih saat di-scroll cepat */
+        /* KUNCI TOTAL UKURAN SCREEN UTAMA - ANTI MEMBAL */
         html, body { 
             overscroll-behavior: none; 
             overflow: hidden; 
-            height: 100%;
-            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100% !important;
+            width: 100% !important;
             margin: 0;
             padding: 0;
+            background-color: #020617;
         }
 
         .font-cyber { font-family: 'Rajdhani', sans-serif; }
         .font-neon { font-family: 'Orbitron', sans-serif; }
         .font-code { font-family: 'Fira Code', monospace; }
         
-        /* Tombol kembali melayang dengan efek neon */
         .btn-floating-back {
             position: fixed;
             top: 15px;
@@ -32,36 +37,144 @@
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
         }
 
-        /* Background Canvas Space */
-        #space-bg {
+        /* --- PRELOADER LAYER SYSTEM --- */
+        #system-preloader {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #070f2e 0%, #020617 100%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s;
+        }
+
+        .loader-ring {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(to right, transparent 40%, #06b6d4);
+            animation: rotateRing 1.5s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader-ring::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: #030712;
+            border-radius: 50%;
+        }
+        .loader-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(to right, transparent 40%, #06b6d4);
+            filter: blur(15px);
+            opacity: 0.6;
+            animation: rotateRing 1.5s linear infinite;
+        }
+        @keyframes rotateRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar-container {
+            width: 260px;
+            height: 4px;
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+        }
+
+        /* --- IMAGE BACKGROUND FIXED ABSOLUTE (KEBAL KEYBOARD GANGGUAN) --- */
+        #custom-image-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in;
+        }
+
+        /* SUSUNAN LAYOUT KOTAK FORM INDEPENDENT */
+        #menu-utama {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
-            background: #020617;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            overflow-x: hidden;
+            overflow-y: auto; /* Izinkan scroll mandiri jika layar HP terlalu pendek */
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* Custom Scrollbar untuk Textarea agar tetap rapi */
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* KOTAK TENGAH DENGAN REDUKSI BLUR BIAR RESPONS KETIK CEPAT */
+        .glow-box {
+            position: relative;
+            background: rgba(2, 6, 23, 0.25); 
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+            animation: pulseGlow 4s infinite alternate;
         }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+                border-color: rgba(6, 182, 212, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 40px rgba(6, 182, 212, 0.45);
+                border-color: rgba(34, 211, 238, 0.6);
+            }
         }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(6, 182, 212, 0.3);
-            border-radius: 99px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(6, 182, 212, 0.6);
-        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 99px; }
     </style>
 </head>
-<body class="text-slate-100 font-cyber min-h-screen select-none bg-slate-950">
+<body class="text-slate-100 font-cyber select-none">
 
-    <canvas id="space-bg"></canvas>
+    <div id="system-preloader">
+        <div class="flex flex-col items-center gap-6">
+            <div class="relative flex items-center justify-center">
+                <div class="loader-glow"></div>
+                <div class="loader-ring"></div>
+                <div id="loading-percentage" class="absolute text-3xl font-neon font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]">0%</div>
+            </div>
+            
+            <div class="text-center flex flex-col gap-2">
+                <div id="loading-status-text" class="text-sm font-code tracking-wider text-slate-400 uppercase">Menghubungkan Jaringan Gambar...</div>
+                <div id="loading-bytes" class="text-[11px] font-mono text-slate-500">0.00 MB / Menghitung...</div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div id="progress-fill" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_12px_rgba(6,182,212,0.8)] transition-all duration-100 linear" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-image-bg"></div>
 
     <div id="wrapper-fullscreen" class="hidden fixed inset-0 w-full h-full bg-white z-[9999]">
         <button onclick="keluarFullscreen()" class="btn-floating-back bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-rose-400">
@@ -70,38 +183,38 @@
         <iframe id="frameFullscreen" class="w-full h-full border-none m-0 p-0"></iframe>
     </div>
 
-    <div id="menu-utama" class="fixed inset-0 w-full h-full flex flex-col justify-between z-10 overflow-hidden">
+    <div id="menu-utama" class="opacity-0 transition-opacity duration-700">
         
-        <header class="bg-slate-900/30 backdrop-blur-lg border-b border-cyan-500/20 py-4 px-6 shadow-[0_4px_30px_rgba(6,182,212,0.05)]">
+        <header class="bg-slate-950/40 backdrop-blur-sm border-b border-cyan-500/10 py-4 px-6 w-full shrink-0">
             <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
                 <h1 class="text-2xl font-neon font-bold tracking-widest text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
                     <i class="fa-solid fa-expand text-amber-400 mr-1 animate-pulse"></i> XT-FULL INJECTOR
                 </h1>
-                <div class="flex items-center gap-2 text-xs font-code text-slate-400 bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-1.5">
+                <div class="flex items-center gap-2 text-xs font-code text-slate-400 bg-slate-950/60 border border-slate-800/60 rounded-lg px-3 py-1.5">
                     <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
                     <span>READY TO RUN</span>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-md w-full mx-auto p-4 flex-grow flex flex-col justify-center">
-            <div class="bg-slate-950/40 backdrop-blur-lg border border-slate-800/60 rounded-2xl p-5 shadow-[0_0_40px_rgba(0,0,0,0.7)] relative overflow-hidden flex flex-col gap-4">
-                <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+        <main class="max-w-md w-full mx-auto p-4 flex-grow flex flex-col justify-center items-center my-auto">
+            <div class="glow-box rounded-2xl p-5 relative overflow-hidden flex flex-col gap-4 w-full">
+                <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
                 
                 <div class="flex flex-col gap-2.5">
-                    <h2 class="text-sm font-bold text-slate-300 tracking-wider flex items-center gap-2 uppercase">
+                    <h2 class="text-sm font-bold text-slate-200 tracking-wider flex items-center gap-2 uppercase drop-shadow-md">
                         <i class="fa-solid fa-code text-cyan-400"></i> Input Kode HTML Kamu:
                     </h2>
                     
-                    <div class="flex items-center justify-between gap-1.5 w-full bg-slate-950/80 p-1.5 border border-slate-900 rounded-xl">
-                        <label class="flex-1 cursor-pointer text-center py-1.5 text-xs font-code bg-cyan-950/40 hover:bg-cyan-950/80 border border-cyan-800/40 text-cyan-400 rounded-lg transition duration-200 flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-file-import text-[10px]"></i> Import File
+                    <div class="flex items-center justify-between gap-1.5 w-full bg-slate-950/50 p-1.5 border border-slate-900/60 rounded-xl">
+                        <label class="flex-1 cursor-pointer text-center py-1.5 text-xs font-code bg-cyan-950/30 hover:bg-cyan-950/50 border border-cyan-800/40 text-cyan-400 rounded-lg transition duration-200 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-file-import text-[10px]"></i> Import
                             <input type="file" id="importFile" accept=".html,.txt" class="hidden" onchange="handleFileImport(this)">
                         </label>
-                        <button onclick="clearInput()" class="flex-1 py-1.5 text-xs font-code bg-slate-900/50 border border-slate-800 text-rose-400 hover:bg-rose-500/10 rounded-lg transition duration-200">
+                        <button onclick="clearInput()" class="flex-1 py-1.5 text-xs font-code bg-slate-900/40 border border-slate-800/50 text-rose-400 hover:bg-rose-500/10 rounded-lg transition duration-200">
                             <i class="fa-solid fa-eraser text-[10px]"></i> Clear
                         </button>
-                        <button onclick="loadSample()" class="flex-1 py-1.5 text-xs font-code bg-slate-900/50 border border-slate-800 text-amber-400 hover:bg-amber-500/10 rounded-lg transition duration-200">
+                        <button onclick="loadSample()" class="flex-1 py-1.5 text-xs font-code bg-slate-900/40 border border-slate-800/50 text-amber-400 hover:bg-amber-500/10 rounded-lg transition duration-200">
                             <i class="fa-solid fa-file-code text-[10px]"></i> Contoh
                         </button>
                     </div>
@@ -109,95 +222,85 @@
 
                 <div id="loadStatus" class="hidden text-[11px] font-code text-center text-amber-400 bg-amber-500/10 border border-amber-500/20 py-1.5 rounded-lg animate-pulse"></div>
 
-                <textarea id="rawHtmlCode" placeholder="Paste kode HTML kamu di sini, atau import file teks panjang menggunakan sistem anti-lag..." class="w-full h-72 bg-slate-950/80 border border-slate-800/80 rounded-xl p-3.5 text-xs font-code text-emerald-400 focus:outline-none focus:border-cyan-500/50 transition resize-none leading-relaxed shadow-inner"></textarea>
+                <textarea id="rawHtmlCode" placeholder="Paste kode HTML kamu di sini, atau import file teks panjang menggunakan sistem anti-lag..." class="w-full h-56 bg-slate-950/60 border border-slate-800/60 rounded-xl p-3.5 text-xs font-code text-emerald-400 focus:outline-none focus:border-cyan-500/60 transition resize-none leading-relaxed shadow-inner"></textarea>
                 
-                <button onclick="masukFullscreen()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition duration-300 shadow-[0_4px_20px_rgba(6,182,212,0.25)] flex items-center justify-center gap-2 text-sm tracking-wider font-neon border border-cyan-400/20">
+                <button onclick="masukFullscreen()" class="w-full bg-gradient-to-r from-cyan-600/80 to-blue-600/80 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition duration-300 shadow-[0_4px_20px_rgba(6,182,212,0.2)] flex items-center justify-center gap-2 text-sm tracking-wider font-neon border border-cyan-400/20">
                     <i class="fa-solid fa-play text-[10px]"></i> LAUNCH SYSTEM (FULL SCREEN)
                 </button>
             </div>
         </main>
 
-        <footer class="text-center py-4 text-[9px] text-slate-600 font-mono tracking-widest uppercase bg-slate-950/20 backdrop-blur-sm border-t border-slate-900/30">
+        <footer class="text-center py-4 text-[9px] text-slate-600 font-mono tracking-widest uppercase bg-slate-950/20 w-full shrink-0">
             &copy; 2026 XTMODEPRO // FULLSCREEN VIEW SYSTEM ENGINE
         </footer>
     </div>
 
     <script>
-        // --- 1. CORE ENGINE: ANIMASI GALAKSI & BINTANG KELAP-KELIP (CANVAS) ---
-        const canvas = document.getElementById('space-bg');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
-        const numStars = 130;
+        const imageUrl = 'https://files.catbox.moe/9t0bs7.jpeg';
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        // --- PRELOAD IMAGE ---
+        function downloadAndLoadImage() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', imageUrl, true);
+            xhr.responseType = 'blob'; 
 
-        // Konstruktor pembuatan data objek partikel luar angkasa
-        for (let i = 0; i < numStars; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 1.4 + 0.4,
-                vx: (Math.random() - 0.5) * 0.15,
-                vy: Math.random() * 0.25 + 0.05,
-                alpha: Math.random(),
-                dAlpha: (Math.random() * 0.015) + 0.005
-            });
-        }
+            const percentText = document.getElementById('loading-percentage');
+            const statusText = document.getElementById('loading-status-text');
+            const bytesText = document.getElementById('loading-bytes');
+            const fillProgress = document.getElementById('progress-fill');
 
-        function drawGalaxySpace() {
-            // Background dasar langit malam
-            ctx.fillStyle = '#020512';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // RENDERING NEBULA / GALAKSI SPIRAL DI TENGAH (Sama seperti referensi screenshot)
-            let cx = canvas.width / 2;
-            let cy = canvas.height / 2;
-            
-            let nebula = ctx.createRadialGradient(cx, cy - 30, 5, cx, cy, Math.max(canvas.width, canvas.height) * 0.6);
-            nebula.addColorStop(0, 'rgba(15, 118, 110, 0.25)');  // Teal Deep
-            nebula.addColorStop(0.2, 'rgba(6, 182, 212, 0.15)'); // Cyan Glow
-            nebula.addColorStop(0.5, 'rgba(15, 23, 42, 0.4)');    // Slate Blend
-            nebula.addColorStop(1, 'rgba(2, 6, 23, 0)');          // Transparent Edge
-            ctx.fillStyle = nebula;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            xhr.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percentage = Math.floor((e.loaded / e.total) * 100);
+                    const currentMB = (e.loaded / (1024 * 1024)).toFixed(2);
+                    const totalMB = (e.total / (1024 * 1024)).toFixed(2);
 
-            // Render partikel bintang dinamis
-            for (let i = 0; i < numStars; i++) {
-                let s = stars[i];
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(165, 243, 252, ${s.alpha})`; // Bintang cyan terang bersinar
-                ctx.fill();
+                    percentText.innerText = percentage + '%';
+                    fillProgress.style.width = percentage + '%';
+                    bytesText.innerText = `${currentMB} MB / ${totalMB} MB`;
 
-                // Pergerakan sistem koordinat
-                s.x += s.vx;
-                s.y += s.vy;
-                
-                // Efek Twinkle (Kelap-Kelip)
-                s.alpha += s.dAlpha;
-                if (s.alpha <= 0.1 || s.alpha >= 0.9) s.dAlpha = -s.dAlpha;
-
-                // Reset jika keluar batas layar viewport mobile
-                if (s.y > canvas.height) {
-                    s.y = 0;
-                    s.x = Math.random() * canvas.width;
+                    if (percentage < 40) {
+                        statusText.innerText = "⏳ Mengunduh Aset Gambar Utama...";
+                    } else if (percentage < 85) {
+                        statusText.innerText = "⚡ Menyimpan Grafis ke Cache Lokal...";
+                    } else if (percentage < 99) {
+                        statusText.innerText = "🚀 Menyelaraskan Struktur UI...";
+                    }
                 }
-                if (s.x < 0 || s.x > canvas.width) {
-                    s.vx = -s.vx;
+            };
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    statusText.innerText = "✅ SELESAI! MENGEKSEKUSI ENGINE...";
+                    percentText.innerText = '100%';
+                    fillProgress.style.width = '100%';
+
+                    const imageBlob = xhr.response;
+                    const blobUrl = URL.createObjectURL(imageBlob);
+                    
+                    const bgElement = document.getElementById('custom-image-bg');
+                    bgElement.style.backgroundImage = `url('${blobUrl}')`;
+
+                    setTimeout(() => {
+                        const preloader = document.getElementById('system-preloader');
+                        const mainUI = document.getElementById('menu-utama');
+                        
+                        preloader.style.opacity = '0';
+                        preloader.style.visibility = 'hidden';
+                        
+                        bgElement.style.opacity = '1';
+                        mainUI.classList.remove('opacity-0');
+                    }, 800);
                 }
-            }
-            requestAnimationFrame(drawGalaxySpace);
+            };
+
+            xhr.send();
         }
-        drawGalaxySpace();
 
+        window.addEventListener('DOMContentLoaded', downloadAndLoadImage);
 
-        // --- 2. ENGINE PROTECTION SYSTEM: ANTI-LAG & CHUNK TEXT CONVERT ---
-        let rawStorageData = ""; // Memori virtual internal untuk menampung teks raksasa (Megabyte aman)
+        // --- 2. ANTI-LAG PROTECTION STORAGE ---
+        let rawStorageData = "";
 
         function handleFileImport(input) {
             const file = input.files[0];
@@ -213,7 +316,7 @@
                 const textArea = document.getElementById('rawHtmlCode');
                 textArea.value = ""; 
 
-                const limitPreview = 80000; // Pembatasan render teks visual di layar HP agar UI tidak patah-patah
+                const limitPreview = 80000;
                 if (rawStorageData.length > limitPreview) {
                     textArea.value = rawStorageData.substring(0, limitPreview) + "\n\n... [SISTEM ANTI-LAG XT ACTIVE: Sisa kode disembunyikan di penampung UI agar RAM stabil, teks asli aman di sistem memori dan siap injeksi!]";
                     statusLabel.innerText = `✅ File Sukses Dimuat: ${(rawStorageData.length / 1024).toFixed(1)} KB (Mode Proteksi RAM)`;
@@ -225,13 +328,16 @@
             reader.readAsText(file);
         }
 
-
-        // --- 3. SYSTEM LAUNCHER CORE INJECTION ---
+        // --- 3. CORE SYSTEM LAUNCH INJECTOR ---
         function masukFullscreen() {
-            // Validasi string masukan kode
-            let kodeStr = rawStorageData && document.getElementById('rawHtmlCode').value.includes('SISTEM ANTI-LAG XT ACTIVE') 
-                ? rawStorageData 
-                : document.getElementById('rawHtmlCode').value.trim();
+            let kodeStr = "";
+            const currentText = document.getElementById('rawHtmlCode').value;
+            
+            if (rawStorageData && currentText.includes('SISTEM ANTI-LAG XT ACTIVE')) {
+                kodeStr = rawStorageData;
+            } else {
+                kodeStr = currentText.trim();
+            }
             
             if (!kodeStr) {
                 alert('⚠️ Gagal mengeksekusi! Harap masukkan kode HTML terlebih dahulu!');
@@ -262,7 +368,6 @@
             wrapper.classList.add('hidden');
             document.getElementById('menu-utama').classList.remove('hidden');
 
-            // Pembersihan RAM Cache Iframe setelah digunakan
             const frameDoc = frame.contentDocument || frame.contentWindow.document;
             frameDoc.open();
             frameDoc.write('');
@@ -279,24 +384,26 @@
         function loadSample() {
             document.getElementById('loadStatus').classList.add('hidden');
             rawStorageData = "";
-            document.getElementById('rawHtmlCode').value = `<!DOCTYPE html>
-<html>
-<head>
-    <title>Situs Tes</title>
-    <style>
-        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding-top: 15%; margin:0; }
-        h1 { color: #00ffcc; font-size: 2.2rem; text-shadow: 0 0 10px #00ffcc; }
-        p { color: #888; font-size: 1rem; }
-    </style>
-</head>
-<body>
-    <h1>SYSTEM SUKSES INJECT</h1>
-    <p>Ini adalah tampilan halaman penuh (Full-Screen) dari HTML yang kamu paste.</p>
-    <script>
-        console.log("XTMODEPRO BYPASS SYSTEM ACTIVE");
-    <\/script>
-</body>
-</html>`;
+            
+            const contohKode = [
+                '<!DOCTYPE html>',
+                '<html>',
+                '<head>',
+                '    <title>Situs Tes</title>',
+                '    <style>',
+                '        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding-top: 15%; margin:0; }',
+                '        h1 { color: #00ffcc; font-size: 2.2rem; text-shadow: 0 0 10px #00ffcc; }',
+                '        p { color: #888; font-size: 1rem; }',
+                '    </style>',
+                '</head>',
+                '<body>',
+                '    <h1>SYSTEM SUKSES INJECT</h1>',
+                '    <p>Ini adalah tampilan halaman penuh (Full-Screen) dari HTML yang kamu paste.</p>',
+                '</body>',
+                '</html>'
+            ].join('\n');
+
+            document.getElementById('rawHtmlCode').value = contohKode;
         }
     </script>
 </body>
