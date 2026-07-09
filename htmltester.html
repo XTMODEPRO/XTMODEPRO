@@ -13,6 +13,7 @@
             --accent-glow: rgba(0, 255, 204, 0.3);
             --text-muted: #4e5563;
             --border-card: #141722;
+            --accent-red: #ff4a4a;
         }
 
         * {
@@ -88,12 +89,35 @@
             gap: 10px;
         }
 
+        .label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .form-label {
             color: var(--accent-cyan);
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+        }
+
+        /* Tombol Hapus All */
+        .btn-clear-all {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.2s;
+        }
+
+        .btn-clear-all:hover {
+            opacity: 0.8;
         }
 
         /* Editor Input */
@@ -165,7 +189,7 @@
 
         .btn-remove-file {
             font-size: 11px;
-            color: #ff4a4a;
+            color: var(--accent-red);
             cursor: pointer;
             background: none;
             border: none;
@@ -279,7 +303,10 @@
             </div>
 
             <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
-                <label class="form-label" id="editor-label">Paste Script HTML</label>
+                <div class="label-container">
+                    <label class="form-label" id="editor-label">Paste Script HTML</label>
+                    <button class="btn-clear-all" id="btn-clear-text" onclick="clearAllText()">[ CLEAR ALL TEKS ]</button>
+                </div>
                 <div class="editor-container">
                     <textarea id="html-textarea" class="textarea-input" placeholder="Paste kode HTML Anda di sini..."></textarea>
                     
@@ -300,8 +327,7 @@
             <button class="btn-back" onclick="closePreview()">← KEMBALI</button>
             <div class="preview-title">LIVE PREVIEW MODE</div>
         </div>
-        <div class="iframe-container" id="iframe-box">
-            </div>
+        <div class="iframe-container" id="iframe-box"></div>
     </div>
 
     <script>
@@ -315,14 +341,13 @@
         const editorLabel = document.getElementById('editor-label');
         const previewPanel = document.getElementById('preview-panel');
         const iframeBox = document.getElementById('iframe-box');
+        const btnClearText = document.getElementById('btn-clear-text');
 
-        // AUDIO MEMORY SYSTEM (Menggunakan Base64 Audio agar tersimpan offline di memori, anti-delay, anti-gagal)
+        // AUDIO MEMORY SYSTEM (Offline Base64)
         const clickSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAQA"); 
-        // Mengatur volume audio biar mantap
         clickSound.volume = 0.5;
 
         function playSound() {
-            // Reset durasi ke 0 agar jika diklik cepat suaranya tidak kepotong delay
             clickSound.currentTime = 0;
             clickSound.play().catch(() => {});
         }
@@ -346,9 +371,17 @@
                 htmlTextarea.style.display = "none";
                 fileDisplayZone.style.display = "flex";
                 editorLabel.innerText = "File Terkunci (Anti-Lag Aktif)";
+                btnClearText.style.display = "none"; // Sembunyikan hapus teks saat mode file aktif
             };
             reader.readAsText(file);
         });
+
+        // Fungsi Membersihkan Semua Isi Teks Manual
+        function clearAllText() {
+            playSound();
+            htmlTextarea.value = "";
+            htmlTextarea.focus();
+        }
 
         function clearImportedFile() {
             playSound();
@@ -359,14 +392,13 @@
             fileDisplayZone.style.display = "none";
             htmlTextarea.style.display = "block";
             editorLabel.innerText = "Paste Script HTML";
+            btnClearText.style.display = "block"; // Munculkan kembali tombol hapus teks
         }
 
-        // FIX FIX: Mengatasi bug "hanya bisa sekali run"
         function executeHTML() {
             playSound();
             let codeToRender = isFileLoaded ? memoryFileContent : htmlTextarea.value;
 
-            // Hapus iframe lama jika ada, lalu buat baru agar engine browser me-refresh dokumen secara total
             iframeBox.innerHTML = "";
             const newIframe = document.createElement('iframe');
             newIframe.id = "preview-frame";
@@ -376,7 +408,6 @@
             newIframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
             iframeBox.appendChild(newIframe);
 
-            // Injeksi kode HTML ke objek baru
             const iframeDoc = newIframe.contentDocument || newIframe.contentWindow.document;
             iframeDoc.open();
             iframeDoc.write(codeToRender);
@@ -388,7 +419,6 @@
         function closePreview() {
             playSound();
             document.body.classList.remove('show-preview');
-            // Menghancurkan iframe saat keluar agar mengosongkan memori RAM HP dari script yang di-test
             iframeBox.innerHTML = "";
         }
     </script>
