@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO - ULTRA BYPASS ENGINE ☢️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Fira Code', monospace;
+        }
+
+        body {
+            background-color: #030307;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 255, 102, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 255, 255, 0.03) 0px, transparent 50%);
+            color: #00ff66;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* --- GLITCH & SCANLINE EFFECTS --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 1;
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* --- MAIN CORE PANEL --- */
+        .box {
+            width: 100%;
+            max-width: 520px;
+            background: rgba(10, 11, 14, 0.8);
+            border: 1px solid rgba(0, 255, 102, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 255, 102, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            z-index: 2;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        /* --- DESIGN ACCENTS --- */
+        .box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 30px;
+            right: 30px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff66, transparent);
+        }
+
+        /* --- HEADER PANEL --- */
+        .header-panel {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+            margin-bottom: 6px;
+        }
+
+        .badge {
+            background: rgba(0, 255, 102, 0.1);
+            color: #00ff66;
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        /* --- FILE UPLOADER COMPONENT --- */
+        .file-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 102, 0.15);
+            color: #888893;
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .file-label:hover {
+            border-color: #00ff66;
+            color: #00ff66;
+            background: rgba(0, 255, 102, 0.02);
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.08);
+        }
+
+        /* --- CORE ACTION BUTTON --- */
+        button {
+            background: linear-gradient(135deg, #00ff66 0%, #00dd55 100%);
+            color: #020205;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 16px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 255, 102, 0.25);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.45);
+        }
+
+        button:disabled {
+            background: #14241a;
+            color: #44554a;
+            border: 1px solid rgba(0, 255, 102, 0.05);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* --- TERMINAL MONITOR LOG --- */
+        .terminal-panel {
+            margin-top: 25px;
+            background: rgba(5, 6, 8, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding-bottom: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff5f56;
+        }
+        .dot:nth-child(2) { background: #ffbd2e; }
+        .dot:nth-child(3) { background: #27c93f; }
+
+        #status {
+            color: #00ffff;
+            font-size: 11px;
+            line-height: 1.6;
+            min-height: 18px;
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #00ff66;
+            box-shadow: 0 0 8px #00ff66;
+            transition: width 0.1s linear;
+        }
+
+        /* --- TELEPORT OUTPUT DOWNLOAD LINK --- */
+        #downloadLink {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            background: rgba(0, 255, 255, 0.06);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        #downloadLink:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div class="box">
+        <div class="header-panel">
+            <h1>XTMODEPRO // CORE BYPASS</h1>
+            <span class="badge">SMALI INJECTOR ENGINE v2.0</span>
+        </div>
+
+        <div class="file-container">
+            <label for="fileInput" id="fileLabel" class="file-label">
+                <span>📂 CHOOSE TARGET SMALI FILE</span>
+            </label>
+            <input type="file" id="fileInput" accept=".smali" onchange="handleFileSelection()">
+        </div>
+
+        <button id="btnPatch" onclick="ultimatePatch()">EXECUTE ULTIMATE PATCH</button>
+
+        <div class="terminal-panel">
+            <div class="terminal-header">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <p id="status">root@xtmodepro:~# status_standby</p>
+            <div class="progress-track">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <a id="downloadLink">💾 DOWNLOAD PATCHED FILE</a>
+    </div>
+
+    <script>
+    function handleFileSelection() {
+        const file = document.getElementById('fileInput').files[0];
+        const label = document.getElementById('fileLabel');
+        if (file) {
+            label.innerHTML = `📄 <span style="color: #00ff66;">${file.name.toUpperCase()}</span>`;
+            label.style.borderColor = 'rgba(0, 255, 102, 0.5)';
+        } else {
+            label.innerHTML = `<span>📂 CHOOSE TARGET SMALI FILE</span>`;
+            label.style.borderColor = 'rgba(0, 255, 102, 0.15)';
+        }
+    }
+
+    async function ultimatePatch() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        if (!file) return alert("Pilih file Smali terlebih dahulu!");
+        
+        const btn = document.getElementById('btnPatch');
+        const status = document.getElementById('status');
+        const progress = document.getElementById('progressFill');
+        const download = document.getElementById('downloadLink');
+
+        // Lock UI State
+        btn.disabled = true;
+        download.style.display = 'none';
+        progress.style.width = '0%';
+
+        // Tahap 1: Membaca File Semula (Aman & Sinkron)
+        status.innerText = ">> Membaca struktur file biner...";
+        progress.style.width = '25%';
+        await new Promise(r => setTimeout(r, 500));
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            let lines = e.target.result.split('\n');
+            let patched = [];
+
+            // Tahap 2: Eksekusi Core Injector System (Sama persis seperti logika aslimu)
+            status.innerText = ">> Menyuntikkan bypass kedalam matriks logika...";
+            progress.style.width = '60%';
+            await new Promise(r => setTimeout(r, 700));
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                // 1. VOID KillMe
+                if (line.includes("method private killMe")) {
+                    patched.push(line);
+                    patched.push("    .registers 1");
+                    patched.push("    return-void");
+                    while (!lines[i].includes(".end method")) i++;
+                    patched.push(".end method");
+                    continue;
+                }
+
+                // 2. VOID Telemetry (SDKReportClient)
+                if (line.includes("Lcom/moonton/sdk/SDKReportClient;->SendError")) {
+                    patched.push("    nop # [XT-ULTIMATE] Telemetry VOIDED");
+                    continue;
+                }
+
+                // 3. FORCE SUCCESS (Boolean Check)
+                if (line.trim() === "return v0" && i > 0 && lines[i-1].includes("move-result v0")) {
+                    patched.push("    const/4 v0, 0x1 # [XT-ULTIMATE] Logic Overridden");
+                    patched.push("    return v0");
+                    continue;
+                }
+
+                // 4. STRIP DEBUGGER (Anti-Debug)
+                if (line.includes("Landroid/os/Debug;->isDebuggerConnected()")) {
+                    patched.push("    const/4 v0, 0x0 # [XT-ULTIMATE] Debugger Hidden");
+                    patched.push("    return v0");
+                    continue;
+                }
+
+                // 5. INTEGRITY OVERRIDE (Signature Check Bypass)
+                if (line.includes("Landroid/content/pm/PackageManager;->getPackageInfo")) {
+                    patched.push("    # [XT-ULTIMATE] Package integrity ignored");
+                }
+
+                patched.push(line);
+            }
+
+            // Tahap 3: Penyusunan Kembali
+            status.innerText = ">> Membangun ulang arsitektur Smali...";
+            progress.style.width = '90%';
+            await new Promise(r => setTimeout(r, 400));
+
+            const finalContent = patched.join('\n');
+            const blob = new Blob([finalContent], {type: 'text/plain'});
+            
+            // Selesai Sempurna
+            progress.style.width = '100%';
+            status.innerText = ">> SUCCESS: Script patched successfully! Siap diunduh.";
+            
+            download.href = URL.createObjectURL(blob);
+            download.download = file.name.replace(".smali", "") + "_patched.smali";
+            download.style.display = 'block';
+            btn.disabled = false;
+        };
+        
+        reader.readAsText(file);
+    }
+    </script>
+</body>
+</html>
