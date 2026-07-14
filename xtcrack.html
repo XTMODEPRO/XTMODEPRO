@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO // NEURAL BYPASS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .custom-shadow {
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex items-center justify-center p-4 sm:p-6">
+
+    <div class="w-full max-w-2xl bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 custom-shadow backdrop-blur-md">
+        
+        <!-- HEADER -->
+        <header class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                    XTMODEPRO
+                </h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono">SYSTEM JUMP TAB</p>
+            </div>
+            <div class="text-right">
+                <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-1 rounded border border-slate-700">CORE STATUS: READY</span>
+            </div>
+        </header>
+
+        <!-- MAIN PANEL -->
+        <div class="space-y-5">
+            
+            <!-- INPUT METHOD TOGGLE -->
+            <div class="flex gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                <button onclick="toggleMethod('file')" id="btnFile" class="flex-1 py-2 text-xs font-medium rounded-lg transition bg-slate-800 text-white shadow-sm">
+                    <i class="fa-solid fa-file-code mr-1.5 opacity-80"></i> Upload .smali
+                </button>
+                <button onclick="toggleMethod('text')" id="btnText" class="flex-1 py-2 text-xs font-medium rounded-lg transition text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-terminal mr-1.5 opacity-80"></i> Raw Text
+                </button>
+            </div>
+
+            <!-- FILE UPLOADER CONTAINER -->
+            <div id="fileArea" class="block">
+                <div class="relative border border-dashed border-slate-700 hover:border-slate-500 rounded-xl p-8 text-center transition bg-slate-950/40 group">
+                    <input type="file" id="smaliFileInput" accept=".smali" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileChange()">
+                    <div id="uploadStatus" class="space-y-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-500 group-hover:text-slate-400 transition"></i>
+                        <p class="text-xs text-slate-400">Pilih atau taruh file <span class="text-cyan-400 font-mono">.smali</span> di sini</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RAW TEXT CONTAINER -->
+            <div id="textArea" class="hidden">
+                <textarea id="smaliTextArea" placeholder="Tempel kode .method public final onCreate(Landroid/os/Bundle;)V di sini..." class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs font-mono text-cyan-400 focus:outline-none focus:border-slate-600 transition resize-none leading-relaxed"></textarea>
+            </div>
+
+            <!-- TARGET CLASS JUMP INPUT -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-400 font-mono">Alamat Class Target Jump</label>
+                <div class="relative">
+                    <i class="fa-solid fa-link absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="targetClassInput" placeholder="Contoh: com.yxnet.MainActivity" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-9 pr-4 text-xs font-mono text-white focus:outline-none focus:border-slate-600 transition">
+                </div>
+            </div>
+
+            <!-- ACTION BUTTON -->
+            <button onclick="processBypass()" class="w-full bg-white hover:bg-slate-100 text-slate-950 font-semibold py-3 rounded-xl text-xs tracking-wide transition shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-bolt-lightning text-amber-500"></i> PROSES BYPASS CODE
+            </button>
+
+            <!-- CONSOLE MONITOR (SIMPLE LOGS) -->
+            <div id="logConsole" class="bg-slate-950 border border-slate-800/80 rounded-xl p-3 text-[11px] font-mono text-slate-500 max-h-24 overflow-y-auto space-y-1">
+                <div>// Sistem siap. Menunggu input berkas...</div>
+            </div>
+
+            <!-- PROGRESS BAR -->
+            <div id="progressArea" class="hidden space-y-1.5 pt-2">
+                <div class="flex justify-between text-xs font-mono">
+                    <span id="progressStatus" class="text-slate-400">Memproses...</span>
+                    <span id="progressPercent" class="text-cyan-400 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1 overflow-hidden border border-slate-850">
+                    <div id="progressBar" class="bg-cyan-500 h-full w-0 transition-all duration-700"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OUTPUT CONTAINER -->
+        <div id="outputArea" class="hidden mt-6 pt-5 border-t border-slate-800">
+            
+            <!-- DOWNLOAD LAYOUT -->
+            <div id="outputFileLayout" class="hidden bg-slate-950 border border-slate-800 rounded-xl p-5 text-center space-y-3">
+                <p class="text-xs text-slate-300 font-mono">Injeksi sukses. File <span id="targetFileName" class="text-emerald-400 font-bold"></span> siap dipasang.</p>
+                <button onclick="downloadBypassedFile()" class="mx-auto px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-medium rounded-lg transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-arrow-down-to-line"></i> Download Smali
+                </button>
+            </div>
+
+            <!-- COPY RAW TEXT LAYOUT -->
+            <div id="outputTextLayout" class="hidden space-y-2">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-mono text-slate-400">Hasil Injeksi Code Raw</span>
+                    <button onclick="copyToClipboard()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition font-medium">
+                        <i class="fa-solid fa-copy mr-1 text-cyan-400"></i> Salin
+                    </button>
+                </div>
+                <textarea id="consoleOutput" readonly class="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none resize-none leading-relaxed"></textarea>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="mt-6 pt-4 border-t border-slate-850 flex justify-between items-center text-[10px] font-mono text-slate-600">
+            <span>BY XTMODEPRO MODDER</span>
+            <span>STABLE ENGINE v8.5</span>
+        </footer>
+
+    </div>
+
+    <script>
+        // BACKGROUND AUDIO LOGIC (TETAP AKTIF OTOMATIS)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const baseVolume = 0.15; 
+
+        function triggerSound(frequency, duration, type = 'sine') {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = type;
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                gain.gain.setValueAtTime(baseVolume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function clickSound() { triggerSound(1000, 0.06, 'triangle'); }
+        function tickSound() { triggerSound(700, 0.02, 'sine'); }
+        function successMelody() {
+            setTimeout(() => triggerSound(523.25, 0.1, 'sine'), 0);
+            setTimeout(() => triggerSound(659.25, 0.1, 'sine'), 80);
+            setTimeout(() => triggerSound(783.99, 0.12, 'sine'), 160);
+            setTimeout(() => triggerSound(1046.50, 0.3, 'sine'), 240);
+        }
+
+        let method = 'file';
+        let originalContent = "";
+        let finalOutput = "";
+        let currentFileName = "output_bypass.smali";
+
+        function toggleMethod(type) {
+            clickSound();
+            method = type;
+            document.getElementById('outputArea').classList.add('hidden');
+            document.getElementById('logConsole').innerHTML = "<div>// System mode updated.</div>";
+
+            if(type === 'file') {
+                document.getElementById('btnFile').className = "flex-1 py-2 text-xs font-medium rounded-lg transition bg-slate-800 text-white shadow-sm";
+                document.getElementById('btnText').className = "flex-1 py-2 text-xs font-medium rounded-lg transition text-slate-400 hover:text-slate-200";
+                document.getElementById('fileArea').classList.replace('hidden', 'block');
+                document.getElementById('textArea').classList.replace('block', 'hidden');
+            } else {
+                document.getElementById('btnText').className = "flex-1 py-2 text-xs font-medium rounded-lg transition bg-slate-800 text-white shadow-sm";
+                document.getElementById('btnFile').className = "flex-1 py-2 text-xs font-medium rounded-lg transition text-slate-400 hover:text-slate-200";
+                document.getElementById('textArea').classList.replace('hidden', 'block');
+                document.getElementById('fileArea').classList.replace('block', 'hidden');
+            }
+        }
+
+        function printLog(msg) {
+            const consoleBox = document.getElementById('logConsole');
+            consoleBox.innerHTML = `<div>> ${msg}</div>`;
+        }
+
+        function handleFileChange() {
+            clickSound();
+            const input = document.getElementById('smaliFileInput');
+            const file = input.files[0];
+            if(file) {
+                currentFileName = file.name;
+                document.getElementById('uploadStatus').innerHTML = `
+                    <i class="fa-solid fa-circle-check text-xl text-emerald-500"></i>
+                    <p class="text-xs font-mono text-emerald-400">${file.name}</p>
+                `;
+                printLog(`Berkas berhasil dimuat: ${file.name}`);
+                
+                const reader = new FileReader();
+                reader.onload = function(e) { originalContent = e.target.result; };
+                reader.readAsText(file);
+            }
+        }
+
+        function processBypass() {
+            let inputCode = method === 'file' ? originalContent : document.getElementById('smaliTextArea').value.trim();
+            const targetJump = document.getElementById('targetClassInput').value.trim();
+
+            if(!inputCode || !targetJump) {
+                triggerSound(140, 0.3, 'sawtooth');
+                alert("Harap lengkapi semua input data!");
+                return;
+            }
+
+            clickSound();
+            document.getElementById('outputArea').classList.add('hidden');
+            
+            const pArea = document.getElementById('progressArea');
+            const pBar = document.getElementById('progressBar');
+            const pTxt = document.getElementById('progressStatus');
+            const pPct = document.getElementById('progressPercent');
+
+            pArea.classList.remove('hidden');
+            pBar.style.width = "0%";
+            pPct.innerText = "0%";
+            pTxt.innerText = "Menganalisa data...";
+
+            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Pemetaan register context..."; }, 300);
+            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Menyisipkan payload hook..."; }, 700);
+            
+            setTimeout(() => {
+                pBar.style.width = "100%";
+                pPct.innerText = "100%";
+                pTxt.innerText = "Selesai!";
+                executeCoreInjection(inputCode, targetJump);
+            }, 1100);
+        }
+
+        function executeCoreInjection(code, target) {
+            const cleanTargetClass = "L" + target.replace(/\./g, '/') + ";";
+
+            if (!code.includes("onCreate(Landroid/os/Bundle;)V")) {
+                triggerSound(140, 0.4, 'sawtooth');
+                printLog("ERROR: Method onCreate tidak ditemukan!");
+                alert("Target onCreate() tidak terdeteksi!");
+                return;
+            }
+
+            const methodRegex = /(\.method\s+(?:[a-z]+\s+)*onCreate\(Landroid\/os\/Bundle;\)V[\s\S]*?\.end\s+method)/gi;
+            
+            finalOutput = code.replace(methodRegex, function(methodBlock) {
+                const regRegex = /\.registers\s+(\d+)/i;
+                let matchReg = methodBlock.match(regRegex);
+                if (matchReg) {
+                    let totalRegs = Math.max(parseInt(matchReg[1]), 5);
+                    methodBlock = methodBlock.replace(regRegex, `.registers ${totalRegs}`);
+                }
+
+                const moveObjRegex = /move-object(?:\/from16)?\s+(v\d+),\s*p0/i;
+                let ctxReg = "p0";
+                let matchMove = methodBlock.match(moveObjRegex);
+                if (matchMove) ctxReg = matchMove[1];
+
+                const superRegex = /(invoke-super(?:\/range)?\s*\{[p0\s\.\,]+p1\},\s*L[^;]+;->onCreate\(Landroid\/os\/Bundle;\)V)/i;
+                
+                if(!superRegex.test(methodBlock)) return methodBlock;
+
+                let payload = `\n\n` +
+                    `    # [SYSTEM-BYPASS-START]\n` +
+                    `    new-instance v1, Landroid/content/Intent;\n` +
+                    `    invoke-direct {v1}, Landroid/content/Intent;-><init>()V\n` +
+                    `    const-class v2, ${cleanTargetClass}\n` +
+                    `    invoke-virtual {v1, ${ctxReg}, v2}, Landroid/content/Intent;->setClass(Landroid/content/Context;Ljava/lang/Class;)Landroid/content/Intent;\n` +
+                    `    invoke-virtual {${ctxReg}, v1}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V\n` +
+                    `    invoke-virtual/range {${ctxReg} .. ${ctxReg}}, Landroid/app/Activity;->finish()V\n` +
+                    `    return-void\n` +
+                    `    # [SYSTEM-BYPASS-END]`;
+
+                return methodBlock.replace(superRegex, `$1${payload}`);
+            });
+
+            successMelody();
+            printLog("Injeksi bypass sukses tanpa anomali.");
+
+            document.getElementById('outputArea').classList.remove('hidden');
+            if (method === 'file') {
+                document.getElementById('outputFileLayout').classList.remove('hidden');
+                document.getElementById('outputTextLayout').classList.add('hidden');
+                document.getElementById('targetFileName').innerText = currentFileName;
+            } else {
+                document.getElementById('outputTextLayout').classList.remove('hidden');
+                document.getElementById('outputFileLayout').classList.add('hidden');
+                document.getElementById('consoleOutput').value = finalOutput;
+            }
+            document.getElementById('outputArea').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadBypassedFile() {
+            clickSound();
+            if (!finalOutput) return;
+            const blob = new Blob([finalOutput], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = currentFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function copyToClipboard() {
+            clickSound();
+            const consoleOutput = document.getElementById('consoleOutput');
+            consoleOutput.select();
+            document.execCommand('copy');
+            printLog("Kode berhasil disalin ke clipboard.");
+            alert("Kode berhasil disalin!");
+        }
+    </script>
+</body>
+</html>
