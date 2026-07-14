@@ -1,0 +1,55 @@
+        // === SYSTEM CUSTOM DROPDOWN (PENGGANTI SELECT NATIVE) ===
+        function toggleDropdown(wrapperId) {
+            const targetOptions = document.getElementById(wrapperId).querySelector('.custom-select-options');
+            
+            // Tutup semua dropdown lain terlebih dahulu
+            document.querySelectorAll('.custom-select-options').forEach(opt => {
+                if(opt !== targetOptions) opt.classList.remove('show');
+            });
+            
+            targetOptions.classList.toggle('show');
+        }
+
+        // Menutup dropdown jika klik di luar area
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('.custom-select-wrapper')) {
+                document.querySelectorAll('.custom-select-options').forEach(opt => opt.classList.remove('show'));
+            }
+        });
+
+        // BUILDER YANG DITINGKATKAN (PERSISTENT)
+        function buildCustomSelect(wrapperId, optionsData, placeholderText, onChangeCallback) {
+            const wrapper = document.getElementById(wrapperId);
+            const display = wrapper.querySelector('.custom-select-display span.text');
+            const optionsContainer = wrapper.querySelector('.custom-select-options');
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+            
+            // Simpan nilai lama (jika ada) di localStorage
+            const storageKey = `xt_selected_${wrapperId}`;
+            let currentVal = localStorage.getItem(storageKey) || hiddenInput.value;
+            
+            let html = '';
+            let labelFound = placeholderText;
+
+            optionsData.forEach(opt => {
+                html += `<div class="custom-select-option" data-value="${opt.value}">${opt.label}</div>`;
+                if (opt.value === currentVal) labelFound = opt.label;
+            });
+            
+            optionsContainer.innerHTML = html;
+            display.innerText = labelFound;
+            hiddenInput.value = currentVal;
+            
+            // Tambahkan event click
+            optionsContainer.querySelectorAll('.custom-select-option').forEach(el => {
+                el.onclick = function() {
+                    const val = this.getAttribute('data-value');
+                    display.innerText = this.innerText;
+                    hiddenInput.value = val;
+                    localStorage.setItem(storageKey, val); // Simpan ke localStorage
+                    optionsContainer.classList.remove('show');
+                    
+                    if (onChangeCallback) onChangeCallback(val);
+                };
+            });
+        }
