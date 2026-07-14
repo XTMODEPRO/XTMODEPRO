@@ -1,0 +1,227 @@
+<!DOCTYPE html><html lang="id"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚡ XTMODEPRO ACCESS PORTAL ⚡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        .font-cyber { font-family: 'Rajdhani', sans-serif; }
+        .font-neon { font-family: 'Orbitron', sans-serif; }
+        .neon-glow-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+        .neon-text-red { text-shadow: 0 0 8px #ef4444; }
+        .neon-text-green { text-shadow: 0 0 8px #22c55e; }
+        
+        /* Pinterest Masonry Grid Effect */
+        .pinterest-grid {
+            columns: 2;
+            column-gap: 12px;
+        }
+        @media (min-width: 640px) { .pinterest-grid { columns: 3; } }
+        @media (min-width: 1024px) { .pinterest-grid { columns: 4; } }
+        .pinterest-item {
+            break-inside: avoid;
+            margin-bottom: 12px;
+        }
+
+        /* FITUR ALA YOUTUBE: Otomatis Fullscreen saat HP Miring (Landscape) */
+        @media (orientation: landscape) and (max-height: 500px) {
+            #imageModal {
+                padding: 0 !important;
+            }
+            #modalImage {
+                max-width: 100vw !important;
+                max-height: 100vh !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                object-fit: contain !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+            #modalLabel {
+                display: none !important;
+            }
+            #closeBtnLandscape {
+                display: block !important;
+            }
+            #closeBtnDefault {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-cyber min-h-screen pb-12 flex justify-center">
+
+    <div id="contentWrapper" class="w-full max-w-5xl flex flex-col min-h-screen py-4">
+        
+        <header class="bg-slate-900 border border-cyan-500/30 rounded-2xl py-4 px-6 mb-6 shadow-[0_4px_20px_rgba(6,182,212,0.15)] flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl font-neon font-bold tracking-widest text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+                <i class="fa-solid fa-circle-radiation text-amber-400 animate-spin mr-1"></i> XT PREMIUM
+            </h1>
+            
+            <div class="px-4 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+                <i class="fa-solid fa-shuffle text-xs mr-1"></i> Random Hybrid Core Active
+            </div>
+        </header>
+
+        <div id="outputContainer" class="w-full relative mt-4">
+            <div id="activeCoreTitle" class="text-xs font-neon text-cyan-400 tracking-widest uppercase mb-4 border-b border-cyan-500/20 pb-2 w-full text-center">
+                ACTIVE MONITOR: <span id="coreNameText">RANDOMIZED MIXED CORES</span>
+            </div>
+
+            <div id="pinterestGrid" class="pinterest-grid w-full"></div>
+
+            <div id="apiLoader" class="hidden my-8 flex flex-col items-center gap-2 w-full justify-center">
+                <i class="fa-solid fa-spinner text-3xl text-cyan-400 animate-spin"></i>
+                <p class="text-xs font-mono tracking-widest text-slate-400">INJECTING RANDOM DATA PACKETS...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="imageModal" class="fixed inset-0 bg-black/95 z-50 hidden flex-col justify-center items-center p-4 backdrop-blur-sm">
+        
+        <button id="closeBtnDefault" onclick="closeModal()" class="absolute top-4 right-4 bg-slate-900/80 border border-cyan-500/50 text-cyan-400 hover:text-cyan-300 px-4 py-2 rounded-xl text-xs font-neon tracking-widest transition shadow-[0_0_15px_rgba(6,182,212,0.2)] z-50">
+            <i class="fa-solid fa-arrow-left mr-1"></i> KEMBALI
+        </button>
+
+        <button id="closeBtnLandscape" onclick="closeModal()" class="hidden absolute top-3 left-3 bg-black/40 text-white/70 hover:text-white p-3 rounded-full text-sm transition z-50 backdrop-blur-sm">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <div class="relative max-w-5xl max-h-[85vh] flex justify-center items-center" onclick="handleModalClick(event)">
+            <img id="modalImage" src="" alt="Preview Besar" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-[0_0_50px_rgba(6,182,212,0.2)] border border-slate-800">
+        </div>
+        
+        <div id="modalLabel" class="mt-4 text-xs font-neon text-cyan-400 tracking-wider uppercase bg-slate-950/80 border border-slate-800 px-4 py-1.5 rounded-full"></div>
+    </div>
+
+    <script>
+        let isLoading = false;
+        
+        // Jumlah request yang dikirimkan setiap kali fungsi loading / infinite scroll terpicu
+        const BATCH_SIZE = 12; 
+
+        // Daftar semua tipe endpoint yang tersedia
+        const typePool = [
+            // Manusia Cores
+            { type: 'ass', name: 'Real Ass' },
+            { type: 'thigh', name: 'Real Thigh' },
+            { type: '4k', name: 'Real Panties' },
+            { type: 'boobs', name: 'Real Boobs' },
+            { type: 'feet', name: 'Real Feet' },
+            { type: 'pgif', name: 'Real Blowjob' },
+            { type: 'pussy', name: 'Pussy' },
+            { type: 'anal', name: 'Anal' },
+            // Anime Cores
+            { type: 'tentacle', name: 'Gangbang' },
+            { type: 'hkitsune', name: 'Kasedaiki' },
+            { type: 'hentai', name: 'Hentai Core' },
+            { type: 'paizuri', name: 'Paizuri' },
+            { type: 'hneko', name: 'Ero Neko' },
+            { type: 'kemonomimi', name: 'Yuri Hentai' },
+            { type: 'hthigh', name: 'Swimsuit Anime' }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAllContent(true);
+            initInfiniteScroll();
+        });
+
+        // Fungsi untuk mengambil item acak dari typePool
+        function getRandomTypes(count) {
+            let selected = [];
+            for (let i = 0; i < count; i++) {
+                const randomIndex = Math.floor(Math.random() * typePool.length);
+                selected.push(typePool[randomIndex]);
+            }
+            return selected;
+        }
+
+        async function loadAllContent(isClearOldGrid = true) {
+            if (isLoading) return;
+            isLoading = true;
+
+            const grid = document.getElementById('pinterestGrid');
+            const loader = document.getElementById('apiLoader');
+            
+            if (isClearOldGrid) {
+                grid.innerHTML = '';
+                grid.classList.add('hidden');
+            }
+            
+            loader.classList.remove('hidden');
+
+            // Mengambil daftar tipe acak berdasarkan ukuran BATCH_SIZE
+            const randomSelectedApis = getRandomTypes(BATCH_SIZE);
+
+            const fetchPromises = randomSelectedApis.map(api => 
+                fetch(`https://nekobot.xyz/api/image?type=${api.type}`)
+                    .then(res => res.json())
+                    .then(data => ({ data: data, name: api.name }))
+                    .catch(() => ({ data: null, name: api.name }))
+            );
+
+            try {
+                const results = await Promise.all(fetchPromises);
+                
+                loader.classList.add('hidden');
+                grid.classList.remove('hidden');
+
+                results.forEach(result => {
+                    if (result.data && result.data.message) {
+                        const item = document.createElement('div');
+                        item.className = "pinterest-item bg-slate-900 border border-slate-800/60 rounded-xl overflow-hidden shadow-md hover:scale-[1.02] transition duration-200 relative group cursor-pointer";
+                        
+                        item.innerHTML = `
+                            <img src="${result.data.message}" alt="Xt-Image" onclick="openModal('${result.data.message}', '${result.name}')" class="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition">
+                            <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-slate-950 via-slate-900/70 to-transparent opacity-0 group-hover:opacity-100 transition text-[10px] text-slate-400 flex justify-between items-center pointer-events-none">
+                                <span class="font-bold tracking-wide">${result.name}</span>
+                                <i class="fa-solid fa-magnifying-glass-plus text-cyan-400"></i>
+                            </div>
+                        `;
+                        grid.appendChild(item);
+                    }
+                });
+            } catch (error) {
+                console.log("Gagal menyuntikkan data paket.");
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function initInfiniteScroll() {
+            window.addEventListener('scroll', () => {
+                if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 150) {
+                    loadAllContent(false);
+                }
+            });
+        }
+
+        function openModal(imgUrl, coreName) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalLabel = document.getElementById('modalLabel');
+            
+            modalImg.src = imgUrl;
+            modalLabel.innerText = "CORE SOURCE: " + coreName;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; 
+        }
+
+        function handleModalClick(event) {
+            if (window.innerWidth > window.innerHeight && window.innerHeight < 500) {
+                closeModal();
+            }
+        }
+    </script>
+</body></html>
