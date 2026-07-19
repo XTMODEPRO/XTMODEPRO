@@ -30,7 +30,7 @@
                     <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
                     XTMODEPRO
                 </h1>
-                <p class="text-xs text-slate-400 mt-0.5 font-mono">SYSTEM JUMP TAB (CUSTOM METHOD)</p>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono">SYSTEM JUMP TAB (AUTO TRIGGER)</p>
             </div>
             <div class="text-right">
                 <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-1 rounded border border-slate-700">CORE STATUS: READY</span>
@@ -124,7 +124,7 @@
         <!-- FOOTER -->
         <footer class="mt-6 pt-4 border-t border-slate-850 flex justify-between items-center text-[10px] font-mono text-slate-600">
             <span>BY XTMODEPRO MODDER</span>
-            <span>STABLE ENGINE v9.0</span>
+            <span>STABLE ENGINE v9.5</span>
         </footer>
 
     </div>
@@ -193,7 +193,6 @@
             const input = document.getElementById('smaliFileInput');
             const file = input.files[0];
             if(file) {
-                // Menghapus .txt jika dari nama asli sudah terbawa
                 currentFileName = file.name.replace(/\.txt$/, "");
                 if (!currentFileName.endsWith(".smali")) {
                     currentFileName += ".smali";
@@ -234,8 +233,8 @@
             pPct.innerText = "0%";
             pTxt.innerText = "Menganalisa data...";
 
-            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Membangun payload XTMODEPRO..."; }, 300);
-            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Menyisipkan custom method NantaXT..."; }, 700);
+            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Membaca Environment Activity..."; }, 300);
+            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Menyisipkan Engine Auto-Trigger..."; }, 700);
             
             setTimeout(() => {
                 pBar.style.width = "100%";
@@ -248,6 +247,16 @@
         function executeCoreInjection(code, target) {
             const cleanTargetClass = "L" + target.replace(/\./g, '/') + ";";
             
+            // 1. Ekstrak nama Class dan Superclass untuk Auto-Trigger yang mulus
+            const classMatch = code.match(/\.class\s+(?:public\s+|final\s+|abstract\s+)*(L[^;]+;)/);
+            const currentClass = classMatch ? classMatch[1] : "Landroid/app/Activity;";
+
+            const superMatch = code.match(/\.super\s+(L[^;]+;)/);
+            const superClass = superMatch ? superMatch[1] : "Landroidx/appcompat/app/AppCompatActivity;";
+            
+            let finalCode = code;
+
+            // 2. Payload Custom Method
             const customMethods = `
 # ==========================================
 # [SYSTEM-BYPASS-START : CUSTOM METHODS]
@@ -287,9 +296,28 @@
 # [SYSTEM-BYPASS-END]
 # ==========================================
 `;
-            finalOutput = code.trim() + "\n\n" + customMethods;
-            
-            printLog("Metode XTMODEPRO & NantaXT berhasil disuntikkan ke dasar class.");
+            // 3. Command Pemanggil (Trigger)
+            const autoTrigger = `\n    # Auto-trigger custom method saat activity dimulai\n    invoke-virtual {p0}, ${currentClass}->NantaXT()V\n`;
+
+            // 4. Injeksi Lifecycle onStart
+            if (finalCode.includes("onStart()V")) {
+                finalCode = finalCode.replace(/(\.method.*?onStart\(\)V[\s\S]*?(?:\.locals|\.registers)\s+\d+)/i, `$1${autoTrigger}`);
+                finalOutput = finalCode.trim() + "\n\n" + customMethods;
+                printLog("Sistem mendeteksi onStart(). Trigger NantaXT disuntikkan ke dalamnya.");
+            } else {
+                const newOnStart = `
+.method protected onStart()V
+    .locals 1
+
+    invoke-super {p0}, ${superClass}->onStart()V
+${autoTrigger}
+    return-void
+.end method
+`;
+                finalOutput = finalCode.trim() + "\n\n" + newOnStart + customMethods;
+                printLog("Method onStart() baru dibuat untuk memicu NantaXT secara otomatis.");
+            }
+
             successMelody();
 
             document.getElementById('outputArea').classList.remove('hidden');
@@ -309,13 +337,11 @@
             clickSound();
             if (!finalOutput) return;
             
-            // Perbaikan Fix Ekstensi File
             let finalName = currentFileName.replace(/\.txt$/, "");
             if (!finalName.endsWith(".smali")) {
                 finalName += ".smali";
             }
 
-            // Menggunakan application/octet-stream agar memaksa download dengan ekstensi asli
             const blob = new Blob([finalOutput], { type: "application/octet-stream" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
