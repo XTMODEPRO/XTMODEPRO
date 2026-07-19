@@ -30,7 +30,7 @@
                     <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
                     XTMODEPRO
                 </h1>
-                <p class="text-xs text-slate-400 mt-0.5 font-mono">SYSTEM JUMP TAB</p>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono">SYSTEM JUMP TAB (CUSTOM METHOD)</p>
             </div>
             <div class="text-right">
                 <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-1 rounded border border-slate-700">CORE STATUS: READY</span>
@@ -63,7 +63,7 @@
 
             <!-- RAW TEXT CONTAINER -->
             <div id="textArea" class="hidden">
-                <textarea id="smaliTextArea" placeholder="Tempel seluruh isi class atau .method public onCreate di sini..." class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs font-mono text-cyan-400 focus:outline-none focus:border-slate-600 transition resize-none leading-relaxed"></textarea>
+                <textarea id="smaliTextArea" placeholder="Tempel seluruh isi file Smali di sini..." class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs font-mono text-cyan-400 focus:outline-none focus:border-slate-600 transition resize-none leading-relaxed"></textarea>
             </div>
 
             <!-- TARGET CLASS JUMP INPUT -->
@@ -77,7 +77,7 @@
 
             <!-- ACTION BUTTON -->
             <button onclick="processBypass()" class="w-full bg-white hover:bg-slate-100 text-slate-950 font-semibold py-3 rounded-xl text-xs tracking-wide transition shadow-sm flex items-center justify-center gap-2">
-                <i class="fa-solid fa-bolt-lightning text-amber-500"></i> PROSES BYPASS CODE
+                <i class="fa-solid fa-bolt-lightning text-amber-500"></i> INJECT CUSTOM METHOD
             </button>
 
             <!-- CONSOLE MONITOR (SIMPLE LOGS) -->
@@ -124,7 +124,7 @@
         <!-- FOOTER -->
         <footer class="mt-6 pt-4 border-t border-slate-850 flex justify-between items-center text-[10px] font-mono text-slate-600">
             <span>BY XTMODEPRO MODDER</span>
-            <span>STABLE ENGINE v8.5</span>
+            <span>STABLE ENGINE v9.0</span>
         </footer>
 
     </div>
@@ -229,8 +229,8 @@
             pPct.innerText = "0%";
             pTxt.innerText = "Menganalisa data...";
 
-            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Membaca target class & properties..."; }, 300);
-            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Membangun ulang struktur register..."; }, 700);
+            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Membangun payload XTMODEPRO..."; }, 300);
+            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Menyisipkan custom method NantaXT..."; }, 700);
             
             setTimeout(() => {
                 pBar.style.width = "100%";
@@ -243,68 +243,50 @@
         function executeCoreInjection(code, target) {
             const cleanTargetClass = "L" + target.replace(/\./g, '/') + ";";
             
-            // 1. Ambil superclass (jika ada) untuk invoke-super yang akurat, fallback ke standar jika tidak ditemukan
-            const superMatch = code.match(/\.super\s+(L[^;]+;)/);
-            const superClass = superMatch ? superMatch[1] : "Landroidx/appcompat/app/AppCompatActivity;";
+            // Payload 2 Custom Method Sakti
+            const customMethods = `
+# ==========================================
+# [SYSTEM-BYPASS-START : CUSTOM METHODS]
+# ==========================================
 
-            // 2. Deteksi apakah method onCreate adalah native (Dex2C)
-            const isNativeOnCreate = /\.method[^\n]*?native[^\n]*?onCreate\(Landroid\/os\/Bundle;\)V/i.test(code);
-            
-            let finalCode = code;
+.method public NantaXT()V
+    .locals 2
 
-            // Payload Bypass Bersih (Hanya butuh v0, v1, dan instance p0)
-            const jumpPayload = `
-    # [SYSTEM-BYPASS-START]
     new-instance v0, Landroid/content/Intent;
     invoke-direct {v0}, Landroid/content/Intent;-><init>()V
+    
     const-class v1, ${cleanTargetClass}
     invoke-virtual {v0, p0, v1}, Landroid/content/Intent;->setClass(Landroid/content/Context;Ljava/lang/Class;)Landroid/content/Intent;
+    
     invoke-virtual {p0, v0}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V
     invoke-virtual {p0}, Landroid/app/Activity;->finish()V
-    # [SYSTEM-BYPASS-END]`;
-
-            if (isNativeOnCreate) {
-                // JIKA NATIVE (DEX2C): Kita tidak bisa inject ke dalam onCreate. Kita beralih membuat/mengubah onStart()
-                if (finalCode.includes("onStart()V")) {
-                    finalCode = finalCode.replace(/(\.method.*?onStart\(\)V[\s\S]*?(?:\.locals|\.registers)\s+\d+)/i, `$1\n${jumpPayload}`);
-                    printLog("Terdeteksi Dex2C. Payload diinjeksi sukses ke dalam onStart() yang sudah ada.");
-                } else {
-                    const newOnStart = `
-.method protected onStart()V
-    .locals 2
-
-    invoke-super {p0}, ${superClass}->onStart()V
-${jumpPayload}
+    
     return-void
 .end method
-`;
-                    finalCode = finalCode.replace(/(\.method)/i, newOnStart + "\n$1");
-                    printLog("Terdeteksi Dex2C. Method onStart() baru berhasil diciptakan untuk bypass.");
-                }
-            } else {
-                // JIKA NORMAL SMALI: Timpa seluruh block onCreate. 100% Bebas Crash & menembus logika keamanan aplikasi
-                const methodRegex = /(\.method\s+(?:[a-z]+\s+)*onCreate\(Landroid\/os\/Bundle;\)V)[\s\S]*?(\.end\s+method)/i;
-                
-                if (!methodRegex.test(finalCode)) {
-                    triggerSound(140, 0.4, 'sawtooth');
-                    printLog("ERROR: Method onCreate tidak ditemukan!");
-                    alert("Target onCreate() tidak terdeteksi!");
-                    return;
-                }
 
-                finalCode = finalCode.replace(methodRegex, function(match, p1, p2) {
-                    return `${p1}
+.method public XTMODEPRO(Landroid/view/View;)V
     .locals 2
 
-    invoke-super {p0, p1}, ${superClass}->onCreate(Landroid/os/Bundle;)V
-${jumpPayload}
+    new-instance v0, Landroid/content/Intent;
+    invoke-direct {v0}, Landroid/content/Intent;-><init>()V
+    
+    const-class v1, ${cleanTargetClass}
+    invoke-virtual {v0, p0, v1}, Landroid/content/Intent;->setClass(Landroid/content/Context;Ljava/lang/Class;)Landroid/content/Intent;
+    
+    invoke-virtual {p0, v0}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V
+    invoke-virtual {p0}, Landroid/app/Activity;->finish()V
+    
     return-void
-${p2}`;
-                });
-                printLog("Injeksi normal sukses. (onCreate System Overwritten).");
-            }
+.end method
 
-            finalOutput = finalCode;
+# ==========================================
+# [SYSTEM-BYPASS-END]
+# ==========================================
+`;
+            // Cukup tambahkan ke bagian paling akhir dari kode smali
+            finalOutput = code.trim() + "\n\n" + customMethods;
+            
+            printLog("Metode XTMODEPRO & NantaXT berhasil disuntikkan ke dasar class.");
             successMelody();
 
             document.getElementById('outputArea').classList.remove('hidden');
