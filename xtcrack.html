@@ -63,7 +63,7 @@
 
             <!-- RAW TEXT CONTAINER -->
             <div id="textArea" class="hidden">
-                <textarea id="smaliTextArea" placeholder="Tempel kode .method public final onCreate(Landroid/os/Bundle;)V di sini..." class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs font-mono text-cyan-400 focus:outline-none focus:border-slate-600 transition resize-none leading-relaxed"></textarea>
+                <textarea id="smaliTextArea" placeholder="Tempel seluruh isi class atau .method public onCreate di sini..." class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs font-mono text-cyan-400 focus:outline-none focus:border-slate-600 transition resize-none leading-relaxed"></textarea>
             </div>
 
             <!-- TARGET CLASS JUMP INPUT -->
@@ -130,7 +130,7 @@
     </div>
 
     <script>
-        // BACKGROUND AUDIO LOGIC (TETAP AKTIF OTOMATIS)
+        // BACKGROUND AUDIO LOGIC
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const baseVolume = 0.15; 
 
@@ -184,7 +184,8 @@
 
         function printLog(msg) {
             const consoleBox = document.getElementById('logConsole');
-            consoleBox.innerHTML = `<div>> ${msg}</div>`;
+            consoleBox.innerHTML += `<div>> ${msg}</div>`;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
         }
 
         function handleFileChange() {
@@ -228,8 +229,8 @@
             pPct.innerText = "0%";
             pTxt.innerText = "Menganalisa data...";
 
-            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Pemetaan register context..."; }, 300);
-            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Menyisipkan payload hook..."; }, 700);
+            setTimeout(() => { tickSound(); pBar.style.width = "40%"; pPct.innerText = "40%"; pTxt.innerText = "Membaca target class & properties..."; }, 300);
+            setTimeout(() => { tickSound(); pBar.style.width = "80%"; pPct.innerText = "80%"; pTxt.innerText = "Membangun ulang struktur register..."; }, 700);
             
             setTimeout(() => {
                 pBar.style.width = "100%";
@@ -241,49 +242,70 @@
 
         function executeCoreInjection(code, target) {
             const cleanTargetClass = "L" + target.replace(/\./g, '/') + ";";
-
-            if (!code.includes("onCreate(Landroid/os/Bundle;)V")) {
-                triggerSound(140, 0.4, 'sawtooth');
-                printLog("ERROR: Method onCreate tidak ditemukan!");
-                alert("Target onCreate() tidak terdeteksi!");
-                return;
-            }
-
-            const methodRegex = /(\.method\s+(?:[a-z]+\s+)*onCreate\(Landroid\/os\/Bundle;\)V[\s\S]*?\.end\s+method)/gi;
             
-            finalOutput = code.replace(methodRegex, function(methodBlock) {
-                const regRegex = /\.registers\s+(\d+)/i;
-                let matchReg = methodBlock.match(regRegex);
-                if (matchReg) {
-                    let totalRegs = Math.max(parseInt(matchReg[1]), 5);
-                    methodBlock = methodBlock.replace(regRegex, `.registers ${totalRegs}`);
+            // 1. Ambil superclass (jika ada) untuk invoke-super yang akurat, fallback ke standar jika tidak ditemukan
+            const superMatch = code.match(/\.super\s+(L[^;]+;)/);
+            const superClass = superMatch ? superMatch[1] : "Landroidx/appcompat/app/AppCompatActivity;";
+
+            // 2. Deteksi apakah method onCreate adalah native (Dex2C)
+            const isNativeOnCreate = /\.method[^\n]*?native[^\n]*?onCreate\(Landroid\/os\/Bundle;\)V/i.test(code);
+            
+            let finalCode = code;
+
+            // Payload Bypass Bersih (Hanya butuh v0, v1, dan instance p0)
+            const jumpPayload = `
+    # [SYSTEM-BYPASS-START]
+    new-instance v0, Landroid/content/Intent;
+    invoke-direct {v0}, Landroid/content/Intent;-><init>()V
+    const-class v1, ${cleanTargetClass}
+    invoke-virtual {v0, p0, v1}, Landroid/content/Intent;->setClass(Landroid/content/Context;Ljava/lang/Class;)Landroid/content/Intent;
+    invoke-virtual {p0, v0}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V
+    invoke-virtual {p0}, Landroid/app/Activity;->finish()V
+    # [SYSTEM-BYPASS-END]`;
+
+            if (isNativeOnCreate) {
+                // JIKA NATIVE (DEX2C): Kita tidak bisa inject ke dalam onCreate. Kita beralih membuat/mengubah onStart()
+                if (finalCode.includes("onStart()V")) {
+                    finalCode = finalCode.replace(/(\.method.*?onStart\(\)V[\s\S]*?(?:\.locals|\.registers)\s+\d+)/i, `$1\n${jumpPayload}`);
+                    printLog("Terdeteksi Dex2C. Payload diinjeksi sukses ke dalam onStart() yang sudah ada.");
+                } else {
+                    const newOnStart = `
+.method protected onStart()V
+    .locals 2
+
+    invoke-super {p0}, ${superClass}->onStart()V
+${jumpPayload}
+    return-void
+.end method
+`;
+                    finalCode = finalCode.replace(/(\.method)/i, newOnStart + "\n$1");
+                    printLog("Terdeteksi Dex2C. Method onStart() baru berhasil diciptakan untuk bypass.");
+                }
+            } else {
+                // JIKA NORMAL SMALI: Timpa seluruh block onCreate. 100% Bebas Crash & menembus logika keamanan aplikasi
+                const methodRegex = /(\.method\s+(?:[a-z]+\s+)*onCreate\(Landroid\/os\/Bundle;\)V)[\s\S]*?(\.end\s+method)/i;
+                
+                if (!methodRegex.test(finalCode)) {
+                    triggerSound(140, 0.4, 'sawtooth');
+                    printLog("ERROR: Method onCreate tidak ditemukan!");
+                    alert("Target onCreate() tidak terdeteksi!");
+                    return;
                 }
 
-                const moveObjRegex = /move-object(?:\/from16)?\s+(v\d+),\s*p0/i;
-                let ctxReg = "p0";
-                let matchMove = methodBlock.match(moveObjRegex);
-                if (matchMove) ctxReg = matchMove[1];
+                finalCode = finalCode.replace(methodRegex, function(match, p1, p2) {
+                    return `${p1}
+    .locals 2
 
-                const superRegex = /(invoke-super(?:\/range)?\s*\{[p0\s\.\,]+p1\},\s*L[^;]+;->onCreate\(Landroid\/os\/Bundle;\)V)/i;
-                
-                if(!superRegex.test(methodBlock)) return methodBlock;
+    invoke-super {p0, p1}, ${superClass}->onCreate(Landroid/os/Bundle;)V
+${jumpPayload}
+    return-void
+${p2}`;
+                });
+                printLog("Injeksi normal sukses. (onCreate System Overwritten).");
+            }
 
-                let payload = `\n\n` +
-                    `    # [SYSTEM-BYPASS-START]\n` +
-                    `    new-instance v1, Landroid/content/Intent;\n` +
-                    `    invoke-direct {v1}, Landroid/content/Intent;-><init>()V\n` +
-                    `    const-class v2, ${cleanTargetClass}\n` +
-                    `    invoke-virtual {v1, ${ctxReg}, v2}, Landroid/content/Intent;->setClass(Landroid/content/Context;Ljava/lang/Class;)Landroid/content/Intent;\n` +
-                    `    invoke-virtual {${ctxReg}, v1}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V\n` +
-                    `    invoke-virtual/range {${ctxReg} .. ${ctxReg}}, Landroid/app/Activity;->finish()V\n` +
-                    `    return-void\n` +
-                    `    # [SYSTEM-BYPASS-END]`;
-
-                return methodBlock.replace(superRegex, `$1${payload}`);
-            });
-
+            finalOutput = finalCode;
             successMelody();
-            printLog("Injeksi bypass sukses tanpa anomali.");
 
             document.getElementById('outputArea').classList.remove('hidden');
             if (method === 'file') {
@@ -316,7 +338,6 @@
             consoleOutput.select();
             document.execCommand('copy');
             printLog("Kode berhasil disalin ke clipboard.");
-            alert("Kode berhasil disalin!");
         }
     </script>
 </body>
