@@ -371,7 +371,7 @@
                 htmlTextarea.style.display = "none";
                 fileDisplayZone.style.display = "flex";
                 editorLabel.innerText = "File Terkunci (Anti-Lag Aktif)";
-                btnClearText.style.display = "none"; // Sembunyikan hapus teks saat mode file aktif
+                btnClearText.style.display = "none";
             };
             reader.readAsText(file);
         });
@@ -392,7 +392,7 @@
             fileDisplayZone.style.display = "none";
             htmlTextarea.style.display = "block";
             editorLabel.innerText = "Paste Script HTML";
-            btnClearText.style.display = "block"; // Munculkan kembali tombol hapus teks
+            btnClearText.style.display = "block";
         }
 
         function executeHTML() {
@@ -405,8 +405,17 @@
             newIframe.style.width = "100%";
             newIframe.style.height = "100%";
             newIframe.style.border = "none";
-            newIframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
+            
+            // ATRIBUT SANDBOX DIPERLUAS: Mengizinkan Form Submit, Script, Popups, Modals, dan Same-Origin
+            newIframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-pointer-lock");
             iframeBox.appendChild(newIframe);
+
+            // INJECT: Menyisipkan meta CSP (Content Security Policy) atau skrip penunjang server request jika diperlukan
+            if (!codeToRender.includes('<head>')) {
+                codeToRender = '<head><meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"></head>' + codeToRender;
+            } else {
+                codeToRender = codeToRender.replace('<head>', '<head><meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">');
+            }
 
             const iframeDoc = newIframe.contentDocument || newIframe.contentWindow.document;
             iframeDoc.open();
