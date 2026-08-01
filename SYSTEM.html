@@ -215,6 +215,7 @@
             margin-top: auto;
         }
 
+        /* Preview Panel / Public View */
         .preview-panel {
             position: fixed;
             top: 0;
@@ -240,6 +241,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        /* Kelas untuk menyembunyikan header jika dibuka sebagai public link */
+        body.public-mode .preview-header {
+            display: none !important;
         }
 
         .preview-header-left {
@@ -399,7 +405,7 @@
             btnClearText.style.display = "block";
         }
 
-        // AUTO-DETEKSI HASH URL AGAR TIDAK 404 DI GITHUB PAGES
+        // AUTO-DETEKSI HASH URL UNTUK PUBLIC LINK (HEADER OTOMATIS DIHILANGKAN)
         window.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash;
             if (hash && hash.startsWith('#/')) {
@@ -409,8 +415,8 @@
                         const decodedHTML = decodeURIComponent(escape(atob(base64Code)));
                         renderHTMLToIframe(decodedHTML);
                         
-                        btnBackAction.style.display = "none";
-                        headerStatusTitle.innerText = "XTMODEPRO - PUBLIC DEPLOYED APP";
+                        // Aktifkan mode public (header atas disembunyikan jadi full screen)
+                        document.body.classList.add('public-mode');
                         document.body.classList.add('show-preview');
                     } catch (e) {
                         console.error("Gagal mendecode Base64:", e);
@@ -430,7 +436,6 @@
 
             const base64Code = btoa(unescape(encodeURIComponent(codeToRender)));
             
-            // Format link menggunakan Hash (#/) agar aman dari error 404 GitHub Pages
             let cleanOrigin = window.location.origin + window.location.pathname;
             generatedShareUrl = cleanOrigin + '#/' + base64Code;
 
@@ -438,6 +443,8 @@
 
             renderHTMLToIframe(codeToRender);
             
+            // Mode preview lokal (header tetap muncul agar lu bisa salin link)
+            document.body.classList.remove('public-mode');
             btnBackAction.style.display = "block";
             headerStatusTitle.innerText = "LIVE PREVIEW & DEPLOYED";
             document.body.classList.add('show-preview');
@@ -481,6 +488,7 @@
         function closePreview() {
             playSound();
             document.body.classList.remove('show-preview');
+            document.body.classList.remove('public-mode');
             iframeBox.innerHTML = "";
             
             let cleanOrigin = window.location.origin + window.location.pathname;
