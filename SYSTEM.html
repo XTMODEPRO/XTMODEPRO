@@ -47,7 +47,6 @@
             justify-content: center;
         }
 
-        /* Header */
         .header-section {
             text-align: center;
             margin-bottom: 30px;
@@ -70,7 +69,6 @@
             text-transform: uppercase;
         }
 
-        /* Card Panel */
         .card-panel {
             background-color: var(--bg-card);
             border: 1px solid var(--border-card);
@@ -112,14 +110,8 @@
             letter-spacing: 0.5px;
             cursor: pointer;
             text-transform: uppercase;
-            transition: opacity 0.2s;
         }
 
-        .btn-clear-all:hover {
-            opacity: 0.8;
-        }
-
-        /* Editor Input */
         .editor-container {
             flex: 1;
             position: relative;
@@ -139,11 +131,6 @@
             outline: none;
         }
 
-        .textarea-input:focus {
-            border-color: rgba(0, 255, 204, 0.4);
-        }
-
-        /* File Display Zone */
         .file-zone {
             display: none;
             position: absolute;
@@ -228,7 +215,6 @@
             margin-top: auto;
         }
 
-        /* Preview Panel / Public View */
         .preview-panel {
             position: fixed;
             top: 0;
@@ -308,7 +294,7 @@
     <div class="app-container">
         <div class="header-section">
             <div class="title-neon">XTMODEPRO</div>
-            <div class="subtitle">Clean URL Deployer</div>
+            <div class="subtitle">Secure Deployer</div>
         </div>
 
         <div class="card-panel">
@@ -338,7 +324,6 @@
         </div>
     </div>
 
-    <!-- Preview / Public View Panel -->
     <div class="preview-panel" id="preview-panel">
         <div class="preview-header">
             <div class="preview-header-left">
@@ -414,21 +399,11 @@
             btnClearText.style.display = "block";
         }
 
-        // AUTO-DETEKSI BASE64 PADA URL PATH (Mendukung /SYSTEM/kodeweb)
+        // AUTO-DETEKSI HASH URL AGAR TIDAK 404 DI GITHUB PAGES
         window.addEventListener('DOMContentLoaded', () => {
-            const pathname = window.location.pathname;
-            const segments = pathname.split('/').filter(Boolean);
-            
-            let systemIdx = -1;
-            for(let i = 0; i < segments.length; i++) {
-                if(segments[i].toLowerCase().startsWith('system')) {
-                    systemIdx = i;
-                    break;
-                }
-            }
-
-            if (systemIdx !== -1 && segments.length > systemIdx + 1) {
-                const base64Code = segments[systemIdx + 1];
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#/')) {
+                const base64Code = hash.substring(2);
                 if (base64Code && base64Code.trim() !== "") {
                     try {
                         const decodedHTML = decodeURIComponent(escape(atob(base64Code)));
@@ -438,7 +413,7 @@
                         headerStatusTitle.innerText = "XTMODEPRO - PUBLIC DEPLOYED APP";
                         document.body.classList.add('show-preview');
                     } catch (e) {
-                        console.error("Gagal mendecode Base64 dari URL:", e);
+                        console.error("Gagal mendecode Base64:", e);
                     }
                 }
             }
@@ -455,13 +430,9 @@
 
             const base64Code = btoa(unescape(encodeURIComponent(codeToRender)));
             
+            // Format link menggunakan Hash (#/) agar aman dari error 404 GitHub Pages
             let cleanOrigin = window.location.origin + window.location.pathname;
-            cleanOrigin = cleanOrigin.replace(/\.html$/i, '');
-            if (!cleanOrigin.endsWith('/')) {
-                cleanOrigin += '/';
-            }
-            
-            generatedShareUrl = cleanOrigin + base64Code;
+            generatedShareUrl = cleanOrigin + '#/' + base64Code;
 
             window.history.pushState({path: generatedShareUrl}, '', generatedShareUrl);
 
@@ -475,7 +446,6 @@
         function renderHTMLToIframe(htmlContent) {
             iframeBox.innerHTML = "";
             const newIframe = document.createElement('iframe');
-            newIframe.id = "preview-frame";
             newIframe.style.width = "100%";
             newIframe.style.height = "100%";
             newIframe.style.border = "none";
@@ -499,12 +469,10 @@
             if (!generatedShareUrl) {
                 const base64Code = btoa(unescape(encodeURIComponent(isFileLoaded ? memoryFileContent : htmlTextarea.value)));
                 let cleanOrigin = window.location.origin + window.location.pathname;
-                cleanOrigin = cleanOrigin.replace(/\.html$/i, '');
-                if (!cleanOrigin.endsWith('/')) cleanOrigin += '/';
-                generatedShareUrl = cleanOrigin + base64Code;
+                generatedShareUrl = cleanOrigin + '#/' + base64Code;
             }
             navigator.clipboard.writeText(generatedShareUrl).then(() => {
-                alert("Link deploy bersih berhasil disalin!");
+                alert("Link deploy berhasil disalin!");
             }).catch(() => {
                 prompt("Salin link ini secara manual:", generatedShareUrl);
             });
@@ -516,7 +484,6 @@
             iframeBox.innerHTML = "";
             
             let cleanOrigin = window.location.origin + window.location.pathname;
-            cleanOrigin = cleanOrigin.replace(/\.html$/i, '');
             window.history.pushState("", document.title, cleanOrigin);
         }
     </script>
