@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teror di Balik Pintu Kontrakan</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap');
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #030303;
+            color: #b0b0b0;
+            font-family: 'Special Elite', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(10, 10, 10, 0.92);
+            border: 1px solid #222;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(255, 0, 0, 0.03);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        /* Efek garis layar horor jadul */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            color: #8b0000;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .story-box {
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #cfcfcf;
+            min-height: 320px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .story-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        .story-box::-webkit-scrollbar-thumb {
+            background: #8b0000;
+        }
+
+        /* Overlay Tombol Mulai */
+        #startOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 3, 3, 0.96);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .btn-start {
+            background: #8b0000;
+            border: 1px solid #ff0000;
+            color: #fff;
+            padding: 15px 35px;
+            font-family: 'Creepster', cursive;
+            font-size: 24px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.8);
+            border-radius: 4px;
+            transition: transform 0.1s;
+        }
+
+        .btn-start:active {
+            transform: scale(0.95);
+        }
+
+        .controls {
+            margin-top: 25px;
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button.control-btn {
+            background: #111;
+            border: 1px solid #444;
+            color: #ddd;
+            padding: 10px 20px;
+            font-family: 'Special Elite', monospace;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+
+        button.control-btn:hover {
+            background: #8b0000;
+            border-color: #ff0000;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        }
+
+        .audio-status {
+            text-align: center;
+            font-size: 10px;
+            color: #555;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="startOverlay">
+        <h1 style="font-size: 38px; margin-bottom: 10px;">TEROR KONTRAKAN</h1>
+        <p style="color: #777; font-size: 12px; margin-bottom: 25px;">Gunakan earphone untuk pengalaman horor terbaik.</p>
+        <button class="btn-start" onclick="beginExperience()">BUKA PINTU</button>
+    </div>
+
+    <div class="container">
+        <h1>Teror di Balik Pintu Kontrakan</h1>
+        <div class="story-box" id="storyText"></div>
+        
+        <div class="controls">
+            <button class="control-btn" onclick="togglePlayMusic()" id="musicBtnToggle">Jeda Musik</button>
+            <button class="control-btn" onclick="replayStory()">Ulangi Cerita</button>
+        </div>
+        <div class="audio-status" id="audioStatus">Musik latar aktif...</div>
+    </div>
+
+    <!-- Audio Musik Horor sesuai link kamu -->
+    <audio id="bgMusic" src="https://files.catbox.moe/pke8s0.mp3" loop></audio>
+
+    <script>
+        const fullStory = `Langit malam baru saja menelan sisa-sisa senja ketika Maya merapatkan jaketnya. Langkah kakinya terasa berat di sepanjang lorong gang sempit yang menuju ke petak kontrakan kecilnya. Sebagai seorang pekerja pabrik dengan jam kerja shift malam yang baru saja usai, kelelahan adalah hal biasa. Namun malam itu, ada rasa janggal yang merambat di tengkuknya—sebuah perasaan tak enak seolah ada pasang mata yang mengawasi dari balik bayangan tembok bata yang lembap.
+
+Maya mempercepat langkahnya, merogoh saku tas untuk mencari kunci gembok. Sesampainya di depan pintu kontrakannya yang bernomor 04, ia segera membuka kunci dan langsung masuk, lalu membanting pintu itu rapat-rapat. Suara "klik" dari gerendel besi memberikan sedikit rasa aman.
+
+Ia melempar tas kerjanya ke atas kasur busa tipis di sudut ruangan, lalu berjalan menuju kamar mandi kecil untuk mencuci muka. Udara di dalam ruangan terasa pengap. Maya mendesah pelan, menatap pantulan dirinya di cermin wastafel yang buram. Wajahnya pucat pasi, matanya menyisakan lingkaran hitam akibat kurang tidur.
+
+Tiba-tiba, suara ketukan pintu terdengar dari luar.
+Tok... tok... tok.
+
+Maya tertegun. Gerakannya terhenti di depan cermin. Jantungnya berdegup kencang. Ia melirik jam dinding: pukul 02.15 pagi. Siapa yang bertamu jam segini? Pemilik kontrakan tidak pernah menagih uang sewa di tengah malam.
+
+"Siapa?" panggil Maya dengan suara serak, berusaha terdengar tegas meski tenggorokannya mendadak kering.
+
+Tidak ada jawaban dari luar. Yang terdengar justru suara decitan pelan, seperti kuku yang menggores kayu pintu bagian bawah.
+Kriek... kriet...
+
+Bulu kuduk Maya berdiri seketika. Ia berjalan perlahan ke arah pintu utama, mengintip dari lubang kecil (peephole) yang ada di daun pintu.
+
+Di luar, lorong kontrakan tampak remang-remang karena lampu neon yang berkedip-kedip sekarat. Namun, tidak ada siapa pun di depan pintunya. Lorong itu kosong. Sepi.
+
+Maya menarik napas lega. Ia menduga itu mungkin hanya kelelawar atau angin malam yang berulah. Ia pun berbalik badan, berniat kembali ke kamarnya untuk tidur.
+
+Namun, tepat saat ia membalikkan badan, sebuah suara bisikan yang sangat pelan dan berat terdengar persis di samping telinganya—seolah pemilik suara itu berdiri tepat di balik kulit lehernya, di dalam ruangan yang sama.
+"Kamu lupa mengunci gerendel bagian atas, Maya..."
+
+Darah Maya mendadak berdesir dingin. Tubuhnya kaku seketika. Ia ingat betul, tidak ada pintu penghubung lain, dan jendela kamarnya terkunci rapat dari dalam. Dengan susah payah, Maya memberanikan diri menoleh ke arah pintu utama.
+
+Gerendel besi di bagian atas pintu itu perlahan bergeser sendiri dengan suara berderit berat, terbuka dari dalam.
+
+Dan di ambang pintu yang mulai terbuka, sesosok bayangan hitam tinggi dengan rambut panjang yang menutupi wajah mulai merangkak masuk, menyeret sesuatu yang berat di lantai semen.`;
+
+        const music = document.getElementById('bgMusic');
+        let charIndex = 0;
+        let timer = null;
+        const typingSpeed = 65; // Kecepatan ketik dibuat santai agar nyaman dibaca pembaca
+
+        function beginExperience() {
+            document.getElementById('startOverlay').style.display = 'none';
+            
+            // Putar musik latar horor
+            music.volume = 0.7;
+            music.play().catch(e => {
+                console.log("Audio play blocked or error:", e);
+            });
+
+            startTypewriter();
+        }
+
+        function startTypewriter() {
+            document.getElementById('storyText').innerHTML = "";
+            charIndex = 0;
+            clearInterval(timer);
+            
+            document.getElementById('audioStatus').innerText = "🎵 Musik latar horor aktif • Membaca cerita...";
+
+            timer = setInterval(() => {
+                if (charIndex < fullStory.length) {
+                    const box = document.getElementById('storyText');
+                    box.innerHTML += fullStory.charAt(charIndex);
+                    box.scrollTop = box.scrollHeight; // Auto-scroll pelan-pelan mengikuti teks
+                    charIndex++;
+                } else {
+                    clearInterval(timer);
+                    document.getElementById('audioStatus').innerText = "🎵 Musik latar aktif • Cerita selesai.";
+                }
+            }, typingSpeed);
+        }
+
+        function togglePlayMusic() {
+            const btn = document.getElementById('musicBtnToggle');
+            if (music.paused) {
+                music.play();
+                btn.innerText = "Jeda Musik";
+                document.getElementById('audioStatus').innerText = "🎵 Musik latar aktif...";
+            } else {
+                music.pause();
+                btn.innerText = "Putar Musik";
+                document.getElementById('audioStatus').innerText = "🔇 Musik dijeda.";
+            }
+        }
+
+        function replayStory() {
+            if (music.paused) {
+                music.play();
+                document.getElementById('musicBtnToggle').innerText = "Jeda Musik";
+            }
+            startTypewriter();
+        }
+    </script>
+</body>
+</html>
