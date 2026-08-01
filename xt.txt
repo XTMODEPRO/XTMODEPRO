@@ -3,221 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checking System & Browser Security...</title>
-    <!-- Menggunakan Font Modern -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Cloudflare Turnstile Script -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    
+    <title>Checking System...</title>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            background-color: #f0f2f5;
             margin: 0;
-            color: #333;
         }
         .container {
             text-align: center;
-            padding: 40px 30px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 400px;
-            transition: all 0.3s ease;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        h3 {
-            margin-top: 0;
-            color: #1f2937;
+        .error-message {
+            display: none;
+            color: #d93025;
         }
-        p {
-            color: #6b7280;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        /* Animasi Loading */
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* State Modifiers */
-        .hidden { display: none !important; }
-        .error-message { color: #dc2626; }
-        .error-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        /* Cloudflare Wrapper */
-        .cf-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            min-height: 65px;
-        }
-
-        /* Tombol */
-        button {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background-color 0.2s;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #2563eb;
-        }
-
-        /* Elemen Jebakan Adblock */
-        .ad-banner, .adsbox, .ad-placement {
-            position: absolute;
-            left: -9999px;
-            top: -9999px;
-            height: 1px;
-            width: 1px;
-            visibility: hidden;
+        .loading {
+            color: #1a73e8;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- State 1: Security Check & Cloudflare -->
-    <div id="cf-state">
-        <div class="spinner" id="cf-spinner"></div>
-        <h3>Memeriksa Keamanan...</h3>
-        <p>Sistem keamanan kami sedang memverifikasi bahwa Anda bukan bot.</p>
-        
-        <!-- Widget Cloudflare Turnstile -->
-        <!-- Ganti '1x00000000000000000000AA' dengan SITE KEY Anda dari Cloudflare Dashboard -->
-        <div class="cf-wrapper">
-            <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-callback="onTurnstileSuccess"></div>
-        </div>
+    <div id="status" class="loading">
+        <h3>Memeriksa Keamanan Sistem...</h3>
+        <p>Mohon tunggu sebentar.</p>
     </div>
 
-    <!-- State 2: Adblock Detected -->
-    <div id="adblock-state" class="hidden">
-        <div class="error-message">
-            <div class="error-icon">🚫</div>
-            <h3>Adblock Terdeteksi!</h3>
-            <p>Maaf, kami mendeteksi penggunaan pemblokir iklan (AdBlock). Mohon matikan ekstensi tersebut untuk melanjutkan.</p>
-        </div>
-        <button onclick="location.reload()">Saya Sudah Mematikan Adblock</button>
-    </div>
-
-    <!-- State 3: Bot Detected (Local Check) -->
-    <div id="bot-state" class="hidden">
-        <div class="error-message">
-            <div class="error-icon">🤖</div>
-            <h3>Akses Ditolak!</h3>
-            <p>Sistem mendeteksi anomali pada browser Anda (Bot/Scraper). Akses diblokir otomatis.</p>
-        </div>
-    </div>
-    
-    <!-- State 4: Success/Redirecting -->
-    <div id="success-state" class="hidden">
-        <div class="spinner" style="border-top-color: #10b981;"></div>
-        <h3 style="color: #10b981;">Verifikasi Berhasil</h3>
-        <p>Koneksi aman. Anda akan dialihkan dalam beberapa detik...</p>
+    <div id="adblock-msg" class="error-message">
+        <h3>Adblock Terdeteksi!</h3>
+        <p>Maaf, Anda harus mematikan Adblock untuk melanjutkan ke halaman tujuan.</p>
+        <button onclick="location.reload()">Saya sudah mematikan Adblock</button>
     </div>
 </div>
 
 <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
 <script>
-    const targetUrl = "LINKTARGET"; // GANTI DENGAN LINK TUJUAN ANDA
-
-    // Elemen DOM
-    const elCfState = document.getElementById('cf-state');
-    const elAdblock = document.getElementById('adblock-state');
-    const elBot = document.getElementById('bot-state');
-    const elSuccess = document.getElementById('success-state');
-    const elCfSpinner = document.getElementById('cf-spinner');
-
-    // 1. Fungsi Deteksi Bot Dasar (Headless Browser)
-    function checkIsBot() {
-        if (navigator.webdriver) return true;
-        if (window.document.documentElement.getAttribute("webdriver")) return true;
-        if (!navigator.language || navigator.languages.length === 0) return true;
-        return false;
-    }
-
-    // 2. Fungsi Deteksi Adblock
-    function checkAdblock() {
-        let isBlocked = false;
-        
-        const adsLoaded = window.adsbygoogle && window.adsbygoogle.loaded === true;
-        if (!document.querySelector('script[src*="adsbygoogle"]') || (window.adsbygoogle && !adsLoaded)) {
-            isBlocked = true;
-        }
-
-        const testAd = document.createElement('div');
-        testAd.innerHTML = '&nbsp;';
-        testAd.className = 'ad-banner adsbox ad-placement doubleclick';
-        document.body.appendChild(testAd);
-
-        if (testAd.offsetHeight === 0 || window.getComputedStyle(testAd).display === 'none') {
-            isBlocked = true;
-        }
-        
-        testAd.remove();
-        return isBlocked;
-    }
-
-    // Cek Bot dasar di awal sebelum Cloudflare dirender
     window.onload = function() {
-        if (checkIsBot()) {
-            elCfState.classList.add('hidden');
-            elBot.classList.remove('hidden');
-        }
-    };
+        // Target URL
+        const targetUrl = "LINKTARGET";
 
-    // 3. Callback Sukses dari Cloudflare Turnstile
-    // Fungsi ini hanya akan berjalan jika pengunjung adalah manusia asli
-    function onTurnstileSuccess(token) {
-        elCfSpinner.classList.add('hidden'); // Sembunyikan spinner
-        
-        // Jeda sebentar untuk UX yang bagus, lalu cek Adblock
+        // Cek apakah script iklan di atas berhasil dimuat atau diblokir
         setTimeout(function() {
-            if (checkAdblock()) {
-                // Jika pakai Adblock
-                elCfState.classList.add('hidden');
-                elAdblock.classList.remove('hidden');
-            } else {
-                // Jika lulus verifikasi Cloudflare & Adblock dimatikan
-                elCfState.classList.add('hidden');
-                elSuccess.classList.remove('hidden');
-                
-                // Redirect ke tujuan
-                setTimeout(() => {
+            const adsLoaded = window.adsbygoogle && window.adsbygoogle.loaded === true;
+            const adBlockEnabled = !document.querySelector('script[src*="adsbygoogle"]') || !adsLoaded;
+
+            // Logika pengecekan tambahan melalui deteksi elemen tersembunyi
+            const testAd = document.createElement('div');
+            testAd.innerHTML = '&nbsp;';
+            testAd.className = 'adsbox';
+            document.body.appendChild(testAd);
+            
+            window.setTimeout(function() {
+                if (testAd.offsetHeight === 0 || adBlockEnabled) {
+                    // Jika Adblock AKTIF
+                    document.getElementById('status').style.display = 'none';
+                    document.getElementById('adblock-msg').style.display = 'block';
+                } else {
+                    // Jika Adblock MATI, langsung arahkan ke tujuan
                     window.location.href = targetUrl;
-                }, 1500);
-            }
-        }, 1000);
-    }
+                }
+                testAd.remove();
+            }, 100);
+        }, 1500); // Memberi waktu script iklan untuk load
+    };
 </script>
+
+<style>
+    .adsbox {
+        position: absolute;
+        left: -999px;
+        height: 1px;
+        width: 1px;
+    }
+</style>
 
 </body>
 </html>
