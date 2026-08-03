@@ -4,15 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checking System...</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .error-message, .invalid-link {
+            display: none;
+            color: #d93025;
+        }
+        .loading {
+            color: #1a73e8;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background-color: #1a73e8;
+            color: white;
+            border-radius: 5px;
+        }
+        button:hover { background-color: #1557b0; }
+    </style>
 </head>
 <body>
+
+<div class="container">
+    <div id="status" class="loading">
+        <h3>Memeriksa Keamanan Sistem...</h3>
+        <p>Mohon tunggu sebentar.</p>
+    </div>
+
+    <div id="adblock-msg" class="error-message">
+        <h3>Adblock Terdeteksi!</h3>
+        <p>Maaf, Anda harus mematikan Adblock untuk melanjutkan ke halaman tujuan.</p>
+        <button onclick="location.reload()">Saya sudah mematikan Adblock</button>
+    </div>
+    
+    <div id="invalid-msg" class="invalid-link">
+        <h3>Link Tidak Valid!</h3>
+        <p>URL tujuan tidak ditemukan atau rusak.</p>
+    </div>
+</div>
+
+<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
 <script>
-    const encodedHtml = "PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImlkIj4KPGhlYWQ+CiAgICA8bWV0YSBjaGFyc2V0PSJVRUYtOCI+CiAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0nd2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCc+CiAgICA8dGl0bGU+Q2hlY2tpbmcgU3lzdGVtLi4uPC90aXRsZT4KICAgIDxzdHlsZT4KICAgICAgICBib2R5IHsKICAgICAgICAgICAgZm9udC1mYW1pbHk6IHNhbnMtc2VyaWY7CiAgICAgICAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgICAgICAgIGp1c3RpZnktY29udGVudDogY2VudGVyOwogICAgICAgICAgICBhbGlnbi1pdGVzczogY2VudGVyOwogICAgICAgICAgICBoZWlnaHQ6IDEwMHZoOwogICAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjZjBmMmY1OwogICAgICAgICAgICBtYXJnaW46IDA7CiAgICAgICAgfQogICAgICAgIC5jb250YWluZXIgewogICAgICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgICAgICAgIHBhZGRpbmc6IDIwcHg7CiAgICAgICAgICAgIGJhY2tncm91bmQ6IHdoaXRlOwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiA4cHg7CiAgICAgICAgICAgIGJveC1zaGFkb3c6IDAgMnB4IDRwe CByZ2JhKDAsMCwwLDAuMSk7CiAgICAgICAgfQogICAgICAgIC5lcnJvci1tZXNzYWdlLCAuaW52YWxpZC1saW5rIHsKICAgIHNwbGF5OiBub25lOwogICAgICAgICAgICBjb2xvcjogI2Q5MzAyNTsKICAgICAgICB9CiAgICAgICAgLmxvYWRpbmcgewogICAgICAgICAgICBjb2xvcjogIzFhNzNlODsKICAgICAgICB9CiAgICAgICAgYnV0dG9uIHsKICAgICAgICAgICAgbWFyZ2luLXRvcDogMTVweDsKICAgICAgICAgICAgcGFkZGluZzogMTBweCAxNXB4OwogICAgICAgICAgICBjdXJzb3I6IHBvaW50ZXI7CiAgICAgICAgICAgIGJvcmRlcjogbm9uZTsKICAgICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogIzFhNzNlODsKICAgICAgICAg   ICBjb2xvcjogd2hpdGU7CiAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6 CjVweDsKICAgICAgICB9CiAgICAg   ICAgYnV0dG9uOmhvdmVyIHsgYmFja2dyb3VuZC1jb2xvcjogIzE1NTdiMDsgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KCjxkaXYgY2xhc3M9ImNvbnRhaW5lciI+CiAgICA8ZGl2IGlkPSJzdGF0dXMiIGNsYXNzPSJsb2FkaW5nIj4KICAgICAgICA8aDM+TWVtZXJpa2thYSBLZWFtYW5hbiBTeXN0ZW0uLi48L2gzPgogICAgICAgIDxwPk1vaG9uIHR1bmdndSBzZWJlbnRhci48L3A+CiAgICA8L2Rpdj4KCiAgICA8ZGl2IGlkPSJhZGJsb2NrLW1zZyIgY2xhc3M9ImVycm9yLW1lc3NhZ2UiPgogICAgICAgIDxoMz5BZGJsb2NrIFRlcmRla3RpayE8L2gzPgogICAgICAgIDxwPk1hYWYsIEFuZGEgaGFydXMgbWVtYXRpa2FuIEFkYmxvY2sgdW50dWsgbWVsYW5qdXRrYW4ga2UgaGFsYW1hbiB0dWp1YW4uPC9wPgogICAgICAgIDxidXR0b24gb25jbGljaz0ibG9jYXRpb24ucmVsb2FkKCkiPlNheWEgc3V1ZGFoIG1lbWF0aWthbiBBZGJsb2NrPC9idXR0b24+CiAgICA8L2Rpdj4KICAgIAogICAgPGRpdiBpZD0iaW52YWxpZC1tc2ciIGNsYXNzPSJpbnZhbGlkLWxpbms+CiAgICAgICAgPGgzPkxpbmsgVGlkYWsgVmFsaWQhPC9oMz4KICAgICAgICA8cD5VUkwgdHVqdWFuIHRpZGFrIGRpdGVtdWJrYW4gYXRhdSBydXNhay48L3A+CiAgICA8L2Rpdj4KPC9kaXY+Cgo8c2NyaXB0IHNyYz0iaHR0cHM6Ly9wYWdlYWQyLmdvb2dsZXN5bmRpY2F0aW9uLmNvbS9wYWdlYWQvanMvYWRzYnlnb29nbGUuanMiPjwvc2NyaXB0PgoKPHNjcmlwdD4KICAgIHdpbmRvdy5vbmxvYWQgPSBmdW5jdGlvbigpIHsKICAgICAgICAvLyAtLS0gS09ORklHVVJBU0kgS1VOQ0kgWE9SIC0tLQogICAgICAgIC8vIEt1bmNpIGluaSBoYXJ1cyBzYW1hIHBlcnNpdCBkZW5nYW4geWFuZyBhZGEgZGkgVG9vbHMgR2VuZXJhdG9yCiAgICAg   ICAgY29uc3Qgc2VyaWV0S2V5ID0gIlhUTU9ERVNECVJFVCI7IAoKICAgICAgICAvLyBGdW5nZXNpIHVudHVrIGRlY29kZSBYT1IgJiBCYXNlNjQKICAgICAgICBmdW5jdGlvbiBkZWNvZGVVUkwoZW5jb2RlZERhdGEpIHsKICAgICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgICAgIGxldCBkZWNvZGVkQmFzZTY0ID0gYXRvYihlbmNvZGVkRGF0YSk7CiAgICAgICAgICAgICAgICBsZXQgcmVzdWx0ID0gIiI7CiAgICAgICAgICAgICAgICBmb3IobGV0IGkgPSAwOyBpIDwgZGVjb2RlZEJhc2U2NC5sZW5ndGg7IGkrKykgewogICAgICAgICAgICAgICAgICAgIHJlc3VsdCArPSBTdHJpbmcuZnJvbUNoYXJDb2RlKGRlY29kZWRCYXNlNjQuY2hhckNvZGVBdChpKSBeIHNlY3JldEtleS5jaGFyQ29kZUF0KGkgJSBzZWNyZXRLZXkubGVuZ3RoKSk7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICByZXR1cm4gcmVzdWx0OwogICAgICAgICAgICB9IGNhdGNoIChlKSB7CiAgICAgICAgICAgICAgICByZXR1cm4gbnVsbDsKICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgLy8gQW1iaWwgZGFyaSBVUkwgKENvbnRvaDogd2ViLmNvbS8jUzA5RFZfUlFBSFpTSUFBIC0+IGFtYmlsIFMwOURWX1JBSEFTSUEpCiAgICAgICAgY29uc3QgaGFzaERhdGEgPSB3aW5kb3cubG9jYXRpb24uaGFzaC5zdWJzdHJpbmcoMSk7CiAgICAg   Y29uc3QgdGFyZ2V0VXJsID0gZGVjb2RlVVJMIgAodGFzaERhdGEpOwogCiAgICAgICAgLy8gSmlrYSB0aWRhayBhZGEgaGFzaCBhdGF1IGdhZ2FsIGItZGVjb2RlCiAgICAgICAgaWYgKCF0YXJnZXRVcmwg|| !dGFyZ2V0VXJsLnN0YXJ0c1dpdGgoImh0dHAiKSkgewogICAgICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc3RhdHVzJykuc3R5bGUuZGlzcGxheSA9ICdub25lJzsKICAgICAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2ludmFsaWQtbXNnJykuc3R5bGUuZGlzcGxheSA9ICdibG9jayc7CiAgICAgICAgICAgIHJldHVybjsgLy8gSGVudGlrYW4gZWtzZWt1c2kKICAgICAgICB9CgogICAgICAgIC8vIC0tLSBTSVNURU0gREVURUtTSSBBREJMT0NLIC0tLQogICAgICAgIHNldFRpbWVvdXQoZnVuY3Rpb24oKSB7CiAgICAgICAgICAgIGNvbnN0IGFkc0xvYWRlZCA9IHdpbmRvdy5hZHNieWdvb2dsZSB&&IHdpbmRvdy5hZHNieWdvb2dsZS5sb2FkZWQgPT09IHRydWU7CiAgICAgICAgICAgIGNvbnN0IGFkQmxvY2tFbmFibGVkID0gIWRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJ3NjcmlwdFtzcmMqPSJhZHNieWdvb2dsZSJdJykgfHwgIWFkc0xvYWRlZDsKCiAgICAgICAgICAgIGNvbnN0IHRlc3RBZCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogICAgICAgICAgICB0ZXN0QWQuaW50ZXJIVE1MID0gJyZuYnNwOyc7CiAgICAgICAgICAgIHRlc3RBZC5jbGFzc05hbWUgPSAnYWRzYm94JzsKICAgICAgICAg   ICBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKHRlc3RBZCk7CiAgICAgICAgICAgIAogICAgICAgICAgICB3aW5kb3cuc2V0VGltZW91dChmdW5jdGlvbigpIHsKICAgICAgICAgICAgICAgIGlmICh0ZXN0QWQuZmZmc2V0SGVpZ2h0ID09PSAwIHx8IGFkQmxvY2tFbmFibGVkKSB7CiAgICAgICAgICAgICAgICAg   Ly8gSmlrYSBJZGJsb2NrIEFLVElGCiAgICAgICAgICAgICAgICAg   ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3N0YXR1cycpLnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICAgICAgICAgICAgICAg   ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2FkYmxvY2stbXNnJykuc3R5bGUuZGlzcGxheSA9ICdibG9jayc7CiAgICAgICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgICAgIC8vIEppa2EgQWRibG9jayBNQVRJLCBhcmFra2FuIGtlIFVSTCBoYXNpbCBkZWNvZGUKICAgICAgICAgICAgICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9IHRhcmdldFVybDsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHRlc3RBZC5yZW1vdmUoKTsKICAgICAgICAgICAgfSwgMTAwKTsKICAgICAgICB9LCAxNTAwKTsgCiAgICB9O
+    window.onload = function() {
+        // --- KONFIGURASI KUNCI XOR ---
+        // Kunci ini harus sama persis dengan yang ada di Tools Generator
+        const secretKey = "XTMODESECRET"; 
+
+        // Fungsi untuk decode XOR & Base64
+        function decodeURL(encodedData) {
+            try {
+                let decodedBase64 = atob(encodedData);
+                let result = "";
+                for (let i = 0; i < decodedBase64.length; i++) {
+                    result += String.fromCharCode(decodedBase64.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length));
+                }
+                return result;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Ambil hash dari URL (Contoh: web.com/#S09ERV9SQUhBU0lB -> ambil S09ERV9SQUhBU0lB)
+        const hashData = window.location.hash.substring(1);
+        const targetUrl = decodeURL(hashData);
+
+        // Jika tidak ada hash atau gagal di-decode
+        if (!targetUrl || !targetUrl.startsWith("http")) {
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('invalid-msg').style.display = 'block';
+            return; // Hentikan eksekusi
+        }
+
+        // --- SISTEM DETEKSI ADBLOCK ---
+        setTimeout(function() {
+            const adsLoaded = window.adsbygoogle && window.adsbygoogle.loaded === true;
+            const adBlockEnabled = !document.querySelector('script[src*="adsbygoogle"]') || !adsLoaded;
+
+            const testAd = document.createElement('div');
+            testAd.innerHTML = '&nbsp;';
+            testAd.className = 'adsbox';
+            document.body.appendChild(testAd);
+            
+            window.setTimeout(function() {
+                if (testAd.offsetHeight === 0 || adBlockEnabled) {
+                    // Jika Adblock AKTIF
+                    document.getElementById('status').style.display = 'none';
+                    document.getElementById('adblock-msg').style.display = 'block';
+                } else {
+                    // Jika Adblock MATI, arahkan ke URL hasil decode
+                    window.location.href = targetUrl;
+                }
+                testAd.remove();
+            }, 100);
+        }, 1500); 
+    };
 </script>
-<script>
-    document.open();
-    document.write(atob(encodedHtml));
-    document.close();
-</script>
+
+<style>
+    .adsbox {
+        position: absolute;
+        left: -999px;
+        height: 1px;
+        width: 1px;
+    }
+</style>
+
 </body>
 </html>
