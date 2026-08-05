@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODEPRO - Strict Smali Injector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030712;
+            --bg-surface: #0b0f19;
+            --bg-card: #111827;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --glow-cyan: rgba(6, 182, 212, 0.15);
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container { width: 94%; max-width: 1320px; margin: 0 auto; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; }
+        
+        .logo a {
+            display: flex; align-items: center; gap: 14px; text-decoration: none;
+            color: #fff; font-size: 20px; font-weight: 800;
+        }
+
+        .logo-icon {
+            width: 42px; height: 42px; border-radius: 12px;
+            border: 2px solid var(--accent-cyan); box-shadow: 0 0 20px var(--glow-cyan);
+            background: #000; display: flex; align-items: center; justify-content: center;
+            color: var(--accent-cyan); font-size: 24px;
+        }
+        .logo span { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        main { flex: 1; padding: 35px 0 60px 0; }
+        
+        .editor-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 900px; margin: 0 auto;
+        }
+
+        .tabs-header {
+            display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border-color);
+            padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);
+            border-color: var(--accent-cyan); box-shadow: 0 0 15px var(--glow-cyan);
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 11px; font-weight: 700; color: var(--text-muted);
+            margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .target-input {
+            width: 100%; background: var(--bg-base); border: 1px solid var(--border-color);
+            padding: 14px 16px; border-radius: 12px; color: #fff; font-size: 14px; outline: none;
+        }
+        .target-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px var(--glow-cyan); }
+
+        .upload-zone {
+            border: 2px dashed var(--border-color); border-radius: 15px; padding: 40px 20px;
+            text-align: center; background: var(--bg-surface); cursor: pointer; transition: all 0.3s; margin-bottom: 15px;
+        }
+        .upload-zone:hover { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); }
+        .upload-zone i { font-size: 40px; color: var(--accent-cyan); margin-bottom: 10px; }
+        .upload-zone h3 { font-size: 16px; color: #fff; margin-bottom: 5px; }
+        .upload-zone p { font-size: 13px; color: var(--text-muted); }
+        #file-input { display: none; }
+
+        textarea {
+            width: 100%; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--accent-cyan);
+            padding: 16px; border-radius: 12px; font-family: 'Courier New', Courier, monospace; font-size: 13px;
+            resize: vertical; min-height: 250px; outline: none; margin-bottom: 15px;
+        }
+        textarea:focus { border-color: var(--accent-cyan); box-shadow: inset 0 0 15px var(--glow-cyan); }
+
+        .btn-process {
+            width: 100%; background: var(--accent-gradient); color: #030712; border: none;
+            padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer;
+            box-shadow: 0 4px 20px var(--glow-cyan); transition: all 0.3s;
+        }
+        .btn-process:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(6, 182, 212, 0.4); }
+
+        .toast-container { position: fixed; bottom: 25px; right: 25px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: var(--bg-surface); border: 1px solid var(--border-color); color: #fff;
+            padding: 14px 20px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease;
+        }
+        .toast.success { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.1); color: #34d399; }
+        .toast.error { border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); color: #f87171; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <div class="logo">
+                <a href="#">
+                    <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+                    <span>XTMODEPRO STRICT INJECTOR</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="editor-card">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('tab1')"><i class="fa-solid fa-file-arrow-up"></i> Upload File Smali</button>
+                <button class="tab-btn" onclick="switchTab('tab2')"><i class="fa-solid fa-code"></i> Raw Smali Text</button>
+            </div>
+
+            <div class="input-group">
+                <label>Target Activity Tujuan (Pindah Tab / Halaman)</label>
+                <input type="text" id="targetActivity" class="target-input" placeholder="Target Activity" required>
+            </div>
+
+            <!-- TAB 1: FILE UPLOAD -->
+            <div id="tab1" class="tab-content active">
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <h3 id="file-name-display">Klik untuk Upload File .smali</h3>
+                    <p>Wajib format ekstensi .smali asli. Format lain akan otomatis ditolak.</p>
+                </div>
+                <input type="file" id="file-input" accept=".smali" onchange="handleFileSelect(event)">
+                <button class="btn-process" onclick="processFileInjection()">
+                    <i class="fa-solid fa-download"></i> PROSES & DOWNLOAD FILE
+                </button>
+            </div>
+
+            <!-- TAB 2: RAW TEXT -->
+            <div id="tab2" class="tab-content">
+                <textarea id="smali-input-2" placeholder="Paste RAW block smali di sini..."></textarea>
+                <button class="btn-process" onclick="processRawInjection()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> PROSES RAW INJEKSI
+                </button>
+                <textarea id="smali-output-2" placeholder="Hasil eksekusi RAW akan tampil di sini..." readonly style="margin-top: 15px; color: #10b981; border-color: #10b981;"></textarea>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let uploadedFile = null;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // VALIDASI KETAT: Harus berakhiran .smali
+            if (!file.name.toLowerCase().endsWith('.smali')) {
+                showToast("Format file salah! Wajib berformat .smali", "error");
+                event.target.value = ""; // Reset input file
+                uploadedFile = null;
+                document.getElementById('file-name-display').innerText = "Klik untuk Upload File .smali";
+                document.getElementById('upload-zone').style.borderColor = "var(--border-color)";
+                return;
+            }
+
+            uploadedFile = file;
+            document.getElementById('file-name-display').innerText = `File Terpilih: ${uploadedFile.name}`;
+            document.getElementById('upload-zone').style.borderColor = "var(--success)";
+            showToast("File .smali berhasil dimuat!", "success");
+        }
+
+        function formatTargetClass(input) {
+            let res = input.trim();
+            if (res.includes('.') && !res.includes('/')) {
+                res = res.replace(/\./g, '/');
+            }
+            if (!res.startsWith('L')) {
+                res = 'L' + res;
+            }
+            if (!res.endsWith(';')) {
+                res = res + ';';
+            }
+            return res;
+        }
+
+        function applyInjectionLogic(smaliCode) {
+            let targetActInput = document.getElementById('targetActivity').value;
+            if (!targetActInput) throw new Error("Target Activity Tujuan wajib diisi!");
+            
+            let formattedIntentClass = formatTargetClass(targetActInput);
+
+            let classMatch = smaliCode.match(/\.class\s+(?:public\s+|private\s+|protected\s+)?([L][a-zA-Z0-9_\/]+);/);
+            if (!classMatch) {
+                throw new Error("Gagal mendeteksi nama kelas (.class L...) pada file smali ini!");
+            }
+            let currentFileClass = classMatch[1] + ";";
+
+            let chainMethodsBlock = `
+.method protected XTMODEPRO()V
+    .locals 2
+
+    new-instance v0, Landroid/content/Intent;
+    const-class v1, ${formattedIntentClass}
+    invoke-direct {v0, p0, v1}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
+    invoke-virtual {p0, v0}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V
+
+    return-void
+.end method
+
+.method protected NantaXT()V
+    .locals 0
+
+    invoke-virtual {p0}, ${currentFileClass}->XTMODEPRO()V
+
+    return-void
+.end method
+`;
+
+            let processedCode = smaliCode;
+            let onStartRegex = /\.method\s+(?:public\s+|protected\s+|private\s+)?(?:synchronized\s+)?onStart\(\)V([\s\S]*?)\.end method/;
+
+            if (onStartRegex.test(processedCode)) {
+                processedCode = processedCode.replace(onStartRegex, (match, body) => {
+                    if (body.includes("->NantaXT()V")) {
+                        return match; 
+                    }
+                    
+                    let updatedBody = body;
+                    let regMatch = body.match(/(\.(?:registers|locals)\s+\d+)/);
+                    if (regMatch) {
+                        let regLine = regMatch[0];
+                        updatedBody = body.replace(regLine, `${regLine}\n    invoke-virtual {p0}, ${currentFileClass}->NantaXT()V`);
+                    } else {
+                        updatedBody = `\n    invoke-virtual {p0}, ${currentFileClass}->NantaXT()V\n` + body;
+                    }
+                    
+                    return `.method protected onStart()V${updatedBody}.end method`;
+                });
+            } else {
+                let newOnStart = `
+.method protected onStart()V
+    .locals 0
+
+    invoke-virtual {p0}, ${currentFileClass}->NantaXT()V
+
+    invoke-super {p0}, Landroid/app/Activity;->onStart()V
+    return-void
+.end method
+`;
+                processedCode = processedCode.trim() + `\n\n${newOnStart}\n`;
+            }
+
+            processedCode = processedCode.trim() + `\n\n${chainMethodsBlock}\n`;
+            return processedCode;
+        }
+
+        function processFileInjection() {
+            if (!uploadedFile) {
+                return showToast("Pilih file .smali terlebih dahulu!", "error");
+            }
+            
+            // Pengecekan ekstra ganda sebelum proses
+            if (!uploadedFile.name.toLowerCase().endsWith('.smali')) {
+                return showToast("Gagal! Format file harus berakhiran .smali", "error");
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const originalCode = e.target.result;
+                    const processedCode = applyInjectionLogic(originalCode);
+                    
+                    const blob = new Blob([processedCode], { type: "application/octet-stream" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = uploadedFile.name; // Nama file hasil download dijamin sama persis tanpa tambahan .txt
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showToast("Injeksi sukses! File .smali berhasil diunduh.", "success");
+                } catch (error) {
+                    showToast(error.message, "error");
+                }
+            };
+            reader.readAsText(uploadedFile);
+        }
+
+        function processRawInjection() {
+            try {
+                let smaliCode = document.getElementById('smali-input-2').value;
+                if (!smaliCode) throw new Error("Data Smali masih kosong!");
+
+                let processedCode = applyInjectionLogic(smaliCode);
+                document.getElementById('smali-output-2').value = processedCode;
+                showToast("Injeksi Raw Berhasil!", "success");
+            } catch (error) {
+                showToast(error.message, "error");
+            }
+        }
+    </script>
+</body>
+</html>
