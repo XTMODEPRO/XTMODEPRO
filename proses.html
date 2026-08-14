@@ -45,11 +45,8 @@
 </head>
 <body>
 
-<!-- Audio Notifikasi -->
-<audio id="alert-sound" src="https://files.catbox.moe/h8j81q.mp3" preload="auto"></audio>
-
 <div class="container">
-    <!-- Tombol Verifikasi Awal untuk Bypass Blokir Suara Browser -->
+    <!-- Tombol Verifikasi Awal (Bahasa Inggris) -->
     <div id="verify-section" class="verify-section">
         <h3>Security Verification</h3>
         <p>Please click the button below to verify and continue.</p>
@@ -97,19 +94,20 @@
     const targetUrl = decodeURL(hashData);
 
     window.onload = function() {
-        // Jika tidak ada hash atau gagal di-decode
         if (!targetUrl || !targetUrl.startsWith("http")) {
             document.getElementById('invalid-msg').style.display = 'block';
             return;
         }
-
-        // Tampilkan tombol verifikasi bahasa Inggris di awal
+        // Tampilkan tombol verifikasi di awal
         document.getElementById('verify-section').style.display = 'block';
     };
 
-    // Fungsi yang berjalan saat tombol "Verify & Continue" diklik
     async function startSystem() {
-        // Sembunyikan tombol verifikasi dan tampilkan status loading
+        // Langsung inisialisasi dan "buka" kunci audio lewat interaksi klik tombol ini
+        // Menggunakan Audio berbasis objek JavaScript murni agar tidak terblokir filter URL adblock
+        const alertSound = new Audio("https://files.catbox.moe/h8j81q.mp3");
+        alertSound.volume = 1.0;
+
         document.getElementById('verify-section').style.display = 'none';
         document.getElementById('status').style.display = 'block';
 
@@ -117,12 +115,10 @@
         async function detectAdBlock() {
             let isAdBlockActive = false;
 
-            // Lapisan 1: Pengecekan Error dari Script Eksternal
             if (window.adblockDetected) {
                 isAdBlockActive = true;
             }
 
-            // Lapisan 2: Pengecekan Object Google Adsense
             if (!isAdBlockActive) {
                 const scriptExists = document.querySelector('script[src*="adsbygoogle"]');
                 if (!scriptExists) {
@@ -130,7 +126,6 @@
                 }
             }
 
-            // Lapisan 3: Elemen Bait (Umpan) menggunakan class filter iklan populer
             if (!isAdBlockActive) {
                 const bait = document.createElement('div');
                 bait.innerHTML = '&nbsp;';
@@ -149,7 +144,6 @@
                 bait.remove();
             }
 
-            // Lapisan 4: Pengecekan Jaringan / Fetch API
             if (!isAdBlockActive) {
                 try {
                     await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
@@ -164,22 +158,19 @@
             return isAdBlockActive;
         }
 
-        // Eksekusi Pengecekan setelah delay singkat
         setTimeout(async function() {
             const blocked = await detectAdBlock();
             
             document.getElementById('status').style.display = 'none';
             
             if (blocked) {
-                // Bunyikan suara jika Adblock terdeteksi
-                const sound = document.getElementById('alert-sound');
-                if (sound) {
-                    sound.play().catch(e => console.log("Audio play blocked:", e));
-                }
+                // Mainkan suara secara langsung menggunakan objek audio yang di-trigger click
+                alertSound.play().catch(err => {
+                    console.log("Gagal memutar audio:", err);
+                });
                 
                 document.getElementById('adblock-msg').style.display = 'block';
             } else {
-                // Adblock MATI, arahkan ke URL hasil decode
                 window.location.href = targetUrl;
             }
         }, 1200);
