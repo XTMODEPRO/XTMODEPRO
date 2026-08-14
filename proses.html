@@ -21,8 +21,10 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .error-message, .invalid-link {
+        .error-message, .invalid-link, .verify-section {
             display: none;
+        }
+        .error-message {
             color: #d93025;
         }
         .loading {
@@ -39,15 +41,22 @@
             font-weight: bold;
         }
         button:hover { background-color: #1557b0; }
-        .audio-container {
-            margin-top: 15px;
-        }
     </style>
 </head>
 <body>
 
+<!-- Audio Notifikasi -->
+<audio id="alert-sound" src="https://files.catbox.moe/h8j81q.mp3" preload="auto"></audio>
+
 <div class="container">
-    <div id="status" class="loading">
+    <!-- Tombol Verifikasi Awal untuk Bypass Blokir Suara Browser -->
+    <div id="verify-section" class="verify-section">
+        <h3>Security Verification</h3>
+        <p>Please click the button below to verify and continue.</p>
+        <button onclick="startSystem()">Verify & Continue</button>
+    </div>
+
+    <div id="status" class="loading" style="display: none;">
         <h3>Memeriksa Keamanan Sistem...</h3>
         <p>Mohon tunggu sebentar.</p>
     </div>
@@ -55,17 +64,10 @@
     <div id="adblock-msg" class="error-message">
         <h3>Adblock Terdeteksi!</h3>
         <p>Maaf, Anda harus mematikan Adblock atau ekstensi pemblokir iklan untuk melanjutkan.</p>
-        
-        <!-- Pemutar Audio MyInstants (Muncul saat Adblock Aktif) -->
-        <div class="audio-container">
-            <iframe width="110" height="200" src="https://www.myinstants.com/instant/hey-antek-antek-asing-prabowo-50390/embed/" frameborder="0" scrolling="no"></iframe>
-        </div>
-
-        <br>
         <button onclick="location.reload()">Saya sudah mematikan Adblock</button>
     </div>
     
-    <div id="invalid-msg" class="invalid-link">
+    <div id="invalid-msg" class="invalid-link" style="color: #d93025;">
         <h3>Link Tidak Valid!</h3>
         <p>URL tujuan tidak ditemukan atau rusak.</p>
     </div>
@@ -74,34 +76,42 @@
 <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onerror="window.adblockDetected=true;"></script>
 
 <script>
-    window.onload = function() {
-        // --- KONFIGURASI KUNCI XOR ---
-        const secretKey = "XTMODESECRET"; 
+    // --- KONFIGURASI KUNCI XOR ---
+    const secretKey = "XTMODESECRET"; 
 
-        // Fungsi untuk decode XOR & Base64
-        function decodeURL(encodedData) {
-            try {
-                let decodedBase64 = atob(encodedData);
-                let result = "";
-                for (let i = 0; i < decodedBase64.length; i++) {
-                    result += String.fromCharCode(decodedBase64.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length));
-                }
-                return result;
-            } catch (e) {
-                return null;
+    // Fungsi untuk decode XOR & Base64
+    function decodeURL(encodedData) {
+        try {
+            let decodedBase64 = atob(encodedData);
+            let result = "";
+            for (let i = 0; i < decodedBase64.length; i++) {
+                result += String.fromCharCode(decodedBase64.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length));
             }
+            return result;
+        } catch (e) {
+            return null;
         }
+    }
 
-        // Ambil hash dari URL
-        const hashData = window.location.hash.substring(1);
-        const targetUrl = decodeURL(hashData);
+    const hashData = window.location.hash.substring(1);
+    const targetUrl = decodeURL(hashData);
 
+    window.onload = function() {
         // Jika tidak ada hash atau gagal di-decode
         if (!targetUrl || !targetUrl.startsWith("http")) {
-            document.getElementById('status').style.display = 'none';
             document.getElementById('invalid-msg').style.display = 'block';
             return;
         }
+
+        // Tampilkan tombol verifikasi bahasa Inggris di awal
+        document.getElementById('verify-section').style.display = 'block';
+    };
+
+    // Fungsi yang berjalan saat tombol "Verify & Continue" diklik
+    async function startSystem() {
+        // Sembunyikan tombol verifikasi dan tampilkan status loading
+        document.getElementById('verify-section').style.display = 'none';
+        document.getElementById('status').style.display = 'block';
 
         // --- SISTEM DETEKSI ADBLOCK MULTI-LAYER ---
         async function detectAdBlock() {
@@ -114,7 +124,6 @@
 
             // Lapisan 2: Pengecekan Object Google Adsense
             if (!isAdBlockActive) {
-                const adsLoaded = window.adsbygoogle && window.adsbygoogle.loaded === true;
                 const scriptExists = document.querySelector('script[src*="adsbygoogle"]');
                 if (!scriptExists) {
                     isAdBlockActive = true;
@@ -162,13 +171,19 @@
             document.getElementById('status').style.display = 'none';
             
             if (blocked) {
+                // Bunyikan suara jika Adblock terdeteksi
+                const sound = document.getElementById('alert-sound');
+                if (sound) {
+                    sound.play().catch(e => console.log("Audio play blocked:", e));
+                }
+                
                 document.getElementById('adblock-msg').style.display = 'block';
             } else {
                 // Adblock MATI, arahkan ke URL hasil decode
                 window.location.href = targetUrl;
             }
-        }, 1200); 
-    };
+        }, 1200);
+    }
 </script>
 
 </body>
