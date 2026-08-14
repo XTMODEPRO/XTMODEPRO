@@ -39,6 +39,9 @@
             font-weight: bold;
         }
         button:hover { background-color: #1557b0; }
+        .audio-container {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -52,6 +55,13 @@
     <div id="adblock-msg" class="error-message">
         <h3>Adblock Terdeteksi!</h3>
         <p>Maaf, Anda harus mematikan Adblock atau ekstensi pemblokir iklan untuk melanjutkan.</p>
+        
+        <!-- Pemutar Audio MyInstants (Muncul saat Adblock Aktif) -->
+        <div class="audio-container">
+            <iframe width="110" height="200" src="https://www.myinstants.com/instant/hey-antek-antek-asing-prabowo-50390/embed/" frameborder="0" scrolling="no"></iframe>
+        </div>
+
+        <br>
         <button onclick="location.reload()">Saya sudah mematikan Adblock</button>
     </div>
     
@@ -115,14 +125,12 @@
             if (!isAdBlockActive) {
                 const bait = document.createElement('div');
                 bait.innerHTML = '&nbsp;';
-                // Menggunakan kombinasi class yang ada di daftar hitam EasyList
                 bait.className = 'ad-banner adsbox doubleclick ad-placement pub_300x250';
                 bait.style.position = 'absolute';
                 bait.style.left = '-9999px';
                 bait.style.height = '10px';
                 document.body.appendChild(bait);
                 
-                // Beri jeda kecil agar DOM selesai merender
                 await new Promise(resolve => setTimeout(resolve, 100));
 
                 const baitStyles = window.getComputedStyle(bait);
@@ -132,7 +140,7 @@
                 bait.remove();
             }
 
-            // Lapisan 4: Pengecekan Jaringan / Fetch API (Menangkap pemblokiran tingkat Network)
+            // Lapisan 4: Pengecekan Jaringan / Fetch API
             if (!isAdBlockActive) {
                 try {
                     await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
@@ -147,7 +155,7 @@
             return isAdBlockActive;
         }
 
-        // Eksekusi Pengecekan setelah delay singkat (mengantisipasi koneksi lambat)
+        // Eksekusi Pengecekan setelah delay singkat
         setTimeout(async function() {
             const blocked = await detectAdBlock();
             
