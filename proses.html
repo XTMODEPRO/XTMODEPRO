@@ -21,10 +21,8 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .error-message, .invalid-link, .verify-section {
+        .error-message, .invalid-link {
             display: none;
-        }
-        .error-message {
             color: #d93025;
         }
         .loading {
@@ -38,7 +36,6 @@
             background-color: #1a73e8;
             color: white;
             border-radius: 5px;
-            font-weight: bold;
         }
         button:hover { background-color: #1557b0; }
     </style>
@@ -46,136 +43,89 @@
 <body>
 
 <div class="container">
-    <!-- Tombol Verifikasi Awal (Bahasa Inggris) -->
-    <div id="verify-section" class="verify-section">
-        <h3>Security Verification</h3>
-        <p>Please click the button below to verify and continue.</p>
-        <button onclick="startSystem()">Verify & Continue</button>
-    </div>
-
-    <div id="status" class="loading" style="display: none;">
+    <div id="status" class="loading">
         <h3>Memeriksa Keamanan Sistem...</h3>
         <p>Mohon tunggu sebentar.</p>
     </div>
 
     <div id="adblock-msg" class="error-message">
         <h3>Adblock Terdeteksi!</h3>
-        <p>Maaf, Anda harus mematikan Adblock atau ekstensi pemblokir iklan untuk melanjutkan.</p>
+        <p>Maaf, Anda harus mematikan Adblock untuk melanjutkan ke halaman tujuan.</p>
         <button onclick="location.reload()">Saya sudah mematikan Adblock</button>
     </div>
     
-    <div id="invalid-msg" class="invalid-link" style="color: #d93025;">
+    <div id="invalid-msg" class="invalid-link">
         <h3>Link Tidak Valid!</h3>
         <p>URL tujuan tidak ditemukan atau rusak.</p>
     </div>
 </div>
 
-<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onerror="window.adblockDetected=true;"></script>
+<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
 <script>
-    // --- KONFIGURASI KUNCI XOR ---
-    const secretKey = "XTMODESECRET"; 
-
-    // Fungsi untuk decode XOR & Base64
-    function decodeURL(encodedData) {
-        try {
-            let decodedBase64 = atob(encodedData);
-            let result = "";
-            for (let i = 0; i < decodedBase64.length; i++) {
-                result += String.fromCharCode(decodedBase64.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length));
-            }
-            return result;
-        } catch (e) {
-            return null;
-        }
-    }
-
-    const hashData = window.location.hash.substring(1);
-    const targetUrl = decodeURL(hashData);
-
     window.onload = function() {
+        // --- KONFIGURASI KUNCI XOR ---
+        // Kunci ini harus sama persis dengan yang ada di Tools Generator
+        const secretKey = "XTMODESECRET"; 
+
+        // Fungsi untuk decode XOR & Base64
+        function decodeURL(encodedData) {
+            try {
+                let decodedBase64 = atob(encodedData);
+                let result = "";
+                for (let i = 0; i < decodedBase64.length; i++) {
+                    result += String.fromCharCode(decodedBase64.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length));
+                }
+                return result;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Ambil hash dari URL (Contoh: web.com/#S09ERV9SQUhBU0lB -> ambil S09ERV9SQUhBU0lB)
+        const hashData = window.location.hash.substring(1);
+        const targetUrl = decodeURL(hashData);
+
+        // Jika tidak ada hash atau gagal di-decode
         if (!targetUrl || !targetUrl.startsWith("http")) {
-            document.getElementById('invalid-msg').style.display = 'block';
-            return;
-        }
-        // Tampilkan tombol verifikasi di awal
-        document.getElementById('verify-section').style.display = 'block';
-    };
-
-    async function startSystem() {
-        // Langsung inisialisasi dan "buka" kunci audio lewat interaksi klik tombol ini
-        // Menggunakan Audio berbasis objek JavaScript murni agar tidak terblokir filter URL adblock
-        const alertSound = new Audio("https://files.catbox.moe/h8j81q.mp3");
-        alertSound.volume = 1.0;
-
-        document.getElementById('verify-section').style.display = 'none';
-        document.getElementById('status').style.display = 'block';
-
-        // --- SISTEM DETEKSI ADBLOCK MULTI-LAYER ---
-        async function detectAdBlock() {
-            let isAdBlockActive = false;
-
-            if (window.adblockDetected) {
-                isAdBlockActive = true;
-            }
-
-            if (!isAdBlockActive) {
-                const scriptExists = document.querySelector('script[src*="adsbygoogle"]');
-                if (!scriptExists) {
-                    isAdBlockActive = true;
-                }
-            }
-
-            if (!isAdBlockActive) {
-                const bait = document.createElement('div');
-                bait.innerHTML = '&nbsp;';
-                bait.className = 'ad-banner adsbox doubleclick ad-placement pub_300x250';
-                bait.style.position = 'absolute';
-                bait.style.left = '-9999px';
-                bait.style.height = '10px';
-                document.body.appendChild(bait);
-                
-                await new Promise(resolve => setTimeout(resolve, 100));
-
-                const baitStyles = window.getComputedStyle(bait);
-                if (bait.offsetHeight === 0 || baitStyles.display === 'none' || baitStyles.visibility === 'hidden') {
-                    isAdBlockActive = true;
-                }
-                bait.remove();
-            }
-
-            if (!isAdBlockActive) {
-                try {
-                    await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
-                        method: 'HEAD',
-                        mode: 'no-cors'
-                    });
-                } catch (err) {
-                    isAdBlockActive = true;
-                }
-            }
-
-            return isAdBlockActive;
-        }
-
-        setTimeout(async function() {
-            const blocked = await detectAdBlock();
-            
             document.getElementById('status').style.display = 'none';
+            document.getElementById('invalid-msg').style.display = 'block';
+            return; // Hentikan eksekusi
+        }
+
+        // --- SISTEM DETEKSI ADBLOCK ---
+        setTimeout(function() {
+            const adsLoaded = window.adsbygoogle && window.adsbygoogle.loaded === true;
+            const adBlockEnabled = !document.querySelector('script[src*="adsbygoogle"]') || !adsLoaded;
+
+            const testAd = document.createElement('div');
+            testAd.innerHTML = '&nbsp;';
+            testAd.className = 'adsbox';
+            document.body.appendChild(testAd);
             
-            if (blocked) {
-                // Mainkan suara secara langsung menggunakan objek audio yang di-trigger click
-                alertSound.play().catch(err => {
-                    console.log("Gagal memutar audio:", err);
-                });
-                
-                document.getElementById('adblock-msg').style.display = 'block';
-            } else {
-                window.location.href = targetUrl;
-            }
-        }, 1200);
-    }
+            window.setTimeout(function() {
+                if (testAd.offsetHeight === 0 || adBlockEnabled) {
+                    // Jika Adblock AKTIF
+                    document.getElementById('status').style.display = 'none';
+                    document.getElementById('adblock-msg').style.display = 'block';
+                } else {
+                    // Jika Adblock MATI, arahkan ke URL hasil decode
+                    window.location.href = targetUrl;
+                }
+                testAd.remove();
+            }, 100);
+        }, 1500); 
+    };
 </script>
+
+<style>
+    .adsbox {
+        position: absolute;
+        left: -999px;
+        height: 1px;
+        width: 1px;
+    }
+</style>
 
 </body>
 </html>
