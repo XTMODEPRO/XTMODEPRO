@@ -5,39 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checking System...</title>
     <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f2f5;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .error-message, .invalid-link {
-            display: none;
-            color: #d93025;
-        }
-        .loading {
-            color: #1a73e8;
-        }
-        button {
-            margin-top: 15px;
-            padding: 10px 15px;
-            cursor: pointer;
-            border: none;
-            background-color: #1a73e8;
-            color: white;
-            border-radius: 5px;
-        }
+        /* CSS Anda tidak saya ubah, sudah bagus */
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .container { text-align: center; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .error-message, .invalid-link { display: none; color: #d93025; }
+        .loading { color: #1a73e8; }
+        button { margin-top: 15px; padding: 10px 15px; cursor: pointer; border: none; background-color: #1a73e8; color: white; border-radius: 5px; }
         button:hover { background-color: #1557b0; }
+        
+        /* CSS Bait - Gunakan nama class yang umum diblokir */
+        .adsbox, .ad-banner, .sponsored-ad { position: absolute; left: -9999px; height: 1px; width: 1px; visibility: hidden; }
     </style>
 </head>
 <body>
@@ -50,7 +27,7 @@
 
     <div id="adblock-msg" class="error-message">
         <h3>Adblock Terdeteksi!</h3>
-        <p>Maaf, Anda harus mematikan Adblock untuk melanjutkan ke halaman tujuan.</p>
+        <p>Maaf, Anda harus mematikan pemblokir iklan (Adblock) untuk melanjutkan ke halaman tujuan.</p>
         <button onclick="location.reload()">Saya sudah mematikan Adblock</button>
     </div>
     
@@ -60,15 +37,10 @@
     </div>
 </div>
 
-<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
 <script>
-    window.onload = function() {
-        // --- KONFIGURASI KUNCI XOR ---
-        // Kunci ini harus sama persis dengan yang ada di Tools Generator
+    window.onload = async function() {
         const secretKey = "XTMODESECRET"; 
 
-        // Fungsi untuk decode XOR & Base64
         function decodeURL(encodedData) {
             try {
                 let decodedBase64 = atob(encodedData);
@@ -82,50 +54,62 @@
             }
         }
 
-        // Ambil hash dari URL (Contoh: web.com/#S09ERV9SQUhBU0lB -> ambil S09ERV9SQUhBU0lB)
         const hashData = window.location.hash.substring(1);
         const targetUrl = decodeURL(hashData);
 
-        // Jika tidak ada hash atau gagal di-decode
         if (!targetUrl || !targetUrl.startsWith("http")) {
             document.getElementById('status').style.display = 'none';
             document.getElementById('invalid-msg').style.display = 'block';
-            return; // Hentikan eksekusi
+            return; 
         }
 
-        // --- SISTEM DETEKSI ADBLOCK ---
-        setTimeout(function() {
-            const adsLoaded = window.adsbygoogle && window.adsbygoogle.loaded === true;
-            const adBlockEnabled = !document.querySelector('script[src*="adsbygoogle"]') || !adsLoaded;
+        // --- SISTEM DETEKSI ADBLOCK YANG DIPERBARUI ---
+        async function detectAdBlock() {
+            let isBlocked = false;
 
-            const testAd = document.createElement('div');
-            testAd.innerHTML = '&nbsp;';
-            testAd.className = 'adsbox';
-            document.body.appendChild(testAd);
-            
-            window.setTimeout(function() {
-                if (testAd.offsetHeight === 0 || adBlockEnabled) {
-                    // Jika Adblock AKTIF
-                    document.getElementById('status').style.display = 'none';
-                    document.getElementById('adblock-msg').style.display = 'block';
-                } else {
-                    // Jika Adblock MATI, arahkan ke URL hasil decode
-                    window.location.href = targetUrl;
+            // 1. Network Level Check (Metode Paling Akurat)
+            // Meminta file AdSense secara diam-diam. Adblocker pasti menggagalkan request ini.
+            try {
+                await fetch(new Request("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                }));
+            } catch (error) {
+                isBlocked = true; // Jika fetch gagal (net::ERR_BLOCKED_BY_CLIENT), berarti ada Adblock
+            }
+
+            // 2. DOM Level Check (Bait Element)
+            // Sebagai cadangan jika metode fetch entah bagaimana tembus
+            if (!isBlocked) {
+                const testAd = document.createElement('div');
+                testAd.innerHTML = '&nbsp;';
+                testAd.className = 'adsbox ad-banner'; // Menggunakan beberapa class bait sekaligus
+                document.body.appendChild(testAd);
+                
+                // Beri jeda sedikit agar browser me-render dan Adblock menerapkan CSS-nya
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (testAd.offsetHeight === 0 || window.getComputedStyle(testAd).display === 'none') {
+                    isBlocked = true;
                 }
                 testAd.remove();
-            }, 100);
-        }, 1500); 
+            }
+
+            return isBlocked;
+        }
+
+        // Eksekusi Pengecekan
+        const adBlockActive = await detectAdBlock();
+
+        if (adBlockActive) {
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('adblock-msg').style.display = 'block';
+        } else {
+            // Jika aman, arahkan ke URL
+            window.location.href = targetUrl;
+        }
     };
 </script>
-
-<style>
-    .adsbox {
-        position: absolute;
-        left: -999px;
-        height: 1px;
-        width: 1px;
-    }
-</style>
 
 </body>
 </html>
