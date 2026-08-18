@@ -93,10 +93,9 @@
             animation: pulse 2s infinite;
         }
 
-        /* ANTI-OVERLAY IKLAN: Memaksa tombol di kasta paling atas */
         #final-btn {
             position: relative !important;
-            z-index: 2147483647 !important; /* Nilai z-index maksimal */
+            z-index: 2147483647 !important;
             pointer-events: auto !important;
             transform: translateZ(1000px) !important;
         }
@@ -133,10 +132,12 @@
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     </style>
 
+    <!-- SCRIPT DEKRIPSI DENGAN SECRET KEY SINKRON -->
     <script>
         const secretKey = "XTMODESECRET"; 
 
         function decodeURL(encodedData) {
+            if (!encodedData) return null;
             try {
                 let decodedBase64 = atob(encodedData);
                 let result = "";
@@ -145,6 +146,7 @@
                 }
                 return result;
             } catch (e) {
+                console.error("Gagal melakukan dekripsi:", e);
                 return null;
             }
         }
@@ -288,7 +290,6 @@
                 <script>atOptions = {'key' : '86390f25619355da6e744d54728410fb','format' : 'iframe','height' : 250,'width' : 300,'params' : {}};</script>
                 <script src="https://www.highperformanceformat.com/86390f25619355da6e744d54728410fb/invoke.js"></script>
             </div>
-            <!-- Menggunakan touchstart agar bereaksi sebelum iklan bisa menimpa klik dari user HP -->
             <button id="final-btn" class="btn btn-download-safe btn-show" onclick="getLink()" ontouchstart="getLink()">🚀 DOWNLOAD MOD NOW 🚀</button>
         </div>
     </div>
