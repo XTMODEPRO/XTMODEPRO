@@ -1,1 +1,473 @@
-Sabar ya lagi di update
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTMODE - SECURE LINK PROCESSING</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        
+        :root {
+            --bg-main: #09090b;
+            --card-bg: rgba(24, 24, 27, 0.78);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #a1a1aa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        body { 
+            background: radial-gradient(circle at top, #1e1b4b, var(--bg-main) 80%);
+            color: var(--text); 
+            min-height: 100vh;
+            padding: 20px 10px 90px 10px;
+            text-align: center; 
+            overflow-x: hidden; 
+        }
+
+        .ad-slot { 
+            margin: 15px auto; 
+            padding: 8px; 
+            background: rgba(255,255,255,0.02); 
+            border: 1px dashed rgba(255,255,255,0.08); 
+            border-radius: 12px; 
+            min-height: 60px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            max-width: 100%; 
+            overflow: hidden; 
+            backdrop-filter: blur(5px); 
+        }
+
+        .container { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px 20px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            max-width: 520px; 
+            margin: 20px auto; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px var(--primary-glow); 
+            position: relative; 
+            z-index: 10; 
+        }
+
+        h3 { color: var(--text); font-size: 20px; margin-bottom: 5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        p.subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; }
+
+        .progress-container { width: 100%; background: #27272a; border-radius: 10px; margin-bottom: 20px; overflow: hidden; height: 8px; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), #c084fc); width: 12.5%; transition: width 0.4s ease-in-out; }
+
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            font-size: 15px; 
+            cursor: pointer; 
+            margin: 15px 0; 
+            transition: all 0.3s ease; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            display: none; 
+            position: relative;
+            z-index: 100;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-show { display: block; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #6d28d9); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover { box-shadow: 0 6px 20px var(--primary-glow); }
+        .btn-success { background: linear-gradient(135deg, var(--success), #059669); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+        
+        .btn-download-safe { 
+            background: linear-gradient(135deg, var(--danger), #b91c1c); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); 
+            animation: pulse 2s infinite;
+        }
+
+        /* ANTI-OVERLAY IKLAN: Memaksa tombol di kasta paling atas */
+        #final-btn {
+            position: relative !important;
+            z-index: 2147483647 !important; /* Nilai z-index maksimal */
+            pointer-events: auto !important;
+            transform: translateZ(1000px) !important;
+        }
+
+        .timer-box { font-size: 26px; color: var(--text); font-weight: 800; margin: 15px 0; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .timer-box span { color: var(--primary); }
+        
+        .captcha-box { background: #000; padding: 12px; border-radius: 12px; border: 2px dashed var(--primary); font-size: 24px; font-weight: 800; color: #fff; margin: 12px 0; letter-spacing: 4px; user-select: none; }
+        input[type="text"] { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid #3f3f46; background: #18181b; color: white; font-size: 16px; text-align: center; text-transform: uppercase; font-family: 'Poppins', sans-serif; font-weight: 600; }
+        input[type="text"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 12px var(--primary-glow); }
+
+        .page { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .active-page { display: block; }
+
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(9, 9, 11, 0.97); z-index: 999999; 
+            display: none; justify-content: center; align-items: center; 
+            flex-direction: column; text-align: center; padding: 25px; 
+            backdrop-filter: blur(15px); color: white; 
+        }
+        .modal-overlay h1 { color: var(--danger); font-size: 24px; margin-bottom: 12px; font-weight: 800; }
+        .modal-overlay p { color: #fff; font-size: 14px; max-width: 450px; line-height: 1.6; }
+        .icon-alert { font-size: 55px; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+
+        .sticky-ad { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(10px); z-index: 9998; box-shadow: 0 -4px 20px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; padding: 4px 0; border-top: 1px solid rgba(255,255,255,0.1); }
+        .close-sticky { position: absolute; top: -28px; right: 15px; background: var(--danger); color: white; border: none; border-radius: 6px 6px 0 0; padding: 4px 12px; cursor: pointer; font-weight: 600; font-size: 11px; }
+
+        .sidebar-ads { position: fixed; top: 40px; display: none; }
+        @media (min-width: 1100px) { .sidebar-ads { display: block; } .left-ad { left: 10px; } .right-ad { right: 10px; } }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+    </style>
+
+    <script>
+        const secretKey = "XTMODESECRET"; 
+
+        function decodeURL(encodedData) {
+            try {
+                let decodedBase64 = atob(encodedData);
+                let result = "";
+                for (let i = 0; i < decodedBase64.length; i++) {
+                    result += String.fromCharCode(decodedBase64.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length));
+                }
+                return result;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const hashData = window.location.hash.substring(1);
+        let finalTargetUrl = decodeURL(hashData);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!finalTargetUrl || (!finalTargetUrl.startsWith("http://") && !finalTargetUrl.startsWith("https://"))) {
+                showInvalidLinkModal();
+            }
+        });
+
+        function showInvalidLinkModal() {
+            let modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="icon-alert">❌</div>
+                <h1>LINK TIDAK VALID ATAU RUSAK</h1>
+                <p>Parameter URL terenkripsi tidak ditemukan atau tidak valid. Silakan gunakan link akses resmi yang benar untuk melanjutkan unduhan.</p>
+            `;
+            document.body.appendChild(modal);
+            throw new Error("Invalid or missing encrypted target URL.");
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Popunder Scripts -->
+    <script src="https://pl28495535.effectivegatecpm.com/08/a5/d6/08a5d6e054ed992037d611a667568379.js"></script>
+    <script src="https://pl28755783.effectivegatecpm.com/4d/08/15/4d0815c9148289293326fde1c6055c08.js"></script>
+
+    <!-- Desktop Sidebar Ads -->
+    <div class="sidebar-ads left-ad">
+        <script>atOptions = { 'key' : '73125c1b7dcd840e80df9efe49b2df39', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script src="https://www.highperformanceformat.com/73125c1b7dcd840e80df9efe49b2df39/invoke.js"></script>
+    </div>
+    <div class="sidebar-ads right-ad" style="top: 660px;">
+        <script>atOptions = { 'key' : '9e2dc2374c3c6469ae2e9142e9060ab9', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };</script>
+        <script src="https://www.highperformanceformat.com/9e2dc2374c3c6469ae2e9142e9060ab9/invoke.js"></script>
+    </div>
+
+    <!-- Top Banner -->
+    <div class="ad-slot">
+        <script>atOptions = {'key' : '1e92fece3e560a72578ad4412a9e7d64','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};</script>
+        <script src="https://www.highperformanceformat.com/1e92fece3e560a72578ad4412a9e7d64/invoke.js"></script>
+    </div>
+
+    <!-- ================= PAGES CONTAINER ================= -->
+    <div class="container">
+        <p class="subtitle" style="text-align: right; margin-bottom: 4px; font-weight: 600;" id="step-text">Step 1 of 8</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+
+        <!-- PAGE 1 -->
+        <div id="p1" class="page active-page">
+            <h3>Prepare Mod Download</h3>
+            <p class="subtitle">System check in progress, please wait...</p>
+            <button class="btn btn-primary btn-show" onclick="startTimer('p1', 5, 'b1_cont')">CLICK TO START</button>
+            <div class="timer-box" id="timer_p1" style="display:none;">Please wait <span>5</span>s</div>
+            <button class="btn btn-success" id="b1_cont" onclick="nextPage(2)">CONTINUE TO STEP 2</button>
+            
+            <div class="ad-slot">
+                <script async="async" data-cfasync="false" src="https://pl28755757.effectivegatecpm.com/eccec9a10ce329bc9eb52377b0549ceb/invoke.js"></script>
+                <div id="container-eccec9a10ce329bc9eb52377b0549ceb"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 2 -->
+        <div id="p2" class="page">
+            <h3>Security Verification</h3>
+            <p class="subtitle">Click verification below to proceed to step 3.</p>
+            <div class="ad-slot">
+                <script>atOptions = {'key' : 'd3e139d8e396bc56c76e6486819376d1','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script>
+                <script src="https://www.highperformanceformat.com/d3e139d8e396bc56c76e6486819376d1/invoke.js"></script>
+            </div>
+            <br>
+            <button class="btn btn-primary btn-show" onclick="openDirectLink(); nextPage(3)">VERIFY & CONTINUE (STEP 3)</button>
+        </div>
+
+        <!-- PAGE 3 -->
+        <div id="p3" class="page">
+            <h3>Human Captcha Check</h3>
+            <p class="subtitle">Type the exact code shown below:</p>
+            <div class="captcha-box" id="captcha-display">LOADING...</div>
+            <input type="text" id="c_inp" placeholder="ENTER CODE..." autocomplete="off">
+            <button class="btn btn-success" id="b3_cont" onclick="nextPage(4)">SUBMIT & CONTINUE (STEP 4)</button>
+            <div class="ad-slot">
+                <script>atOptions = {'key' : '86390f25619355da6e744d54728410fb','format' : 'iframe','height' : 250,'width' : 300,'params' : {}};</script>
+                <script src="https://www.highperformanceformat.com/86390f25619355da6e744d54728410fb/invoke.js"></script>
+            </div>
+        </div>
+
+        <!-- PAGE 4 -->
+        <div id="p4" class="page">
+            <h3>Generating Mod Files</h3>
+            <p class="subtitle">Please wait while configuration loads...</p>
+            <button class="btn btn-primary btn-show" onclick="startTimer('p4', 5, 'b4_cont')">PROCESS LINK</button>
+            <div class="timer-box" id="timer_p4" style="display:none;">Please wait <span>5</span>s</div>
+            <button class="btn btn-success" id="b4_cont" onclick="nextPage(5)">CONTINUE TO STEP 5</button>
+        </div>
+
+        <!-- PAGE 5 -->
+        <div id="p5" class="page">
+            <h3>Anti-Bot Validation</h3>
+            <p class="subtitle">Confirm you are a real user to continue.</p>
+            <div class="ad-slot">
+                <script>atOptions = {'key' : '0274e5ace560886601e39449a0e71e99','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};</script>
+                <script src="https://www.highperformanceformat.com/0274e5ace560886601e39449a0e71e99/invoke.js"></script>
+            </div>
+            <button class="btn btn-primary btn-show" onclick="openDirectLink(); nextPage(6)">I AM NOT A ROBOT (STEP 6)</button>
+        </div>
+
+        <!-- PAGE 6 -->
+        <div id="p6" class="page">
+            <h3>Finalizing Data</h3>
+            <p class="subtitle">Almost ready, establishing secure stream...</p>
+            <button class="btn btn-primary btn-show" onclick="startTimer('p6', 5, 'b6_cont')">GENERATE NOW</button>
+            <div class="timer-box" id="timer_p6" style="display:none;">Please wait <span>5</span>s</div>
+            <button class="btn btn-success" id="b6_cont" onclick="nextPage(7)">CONTINUE TO STEP 7</button>
+        </div>
+
+        <!-- PAGE 7 -->
+        <div id="p7" class="page">
+            <h3>Link Almost Ready</h3>
+            <p class="subtitle">Your file verification is completed successfully.</p>
+            <div class="ad-slot">
+                <script>atOptions = {'key' : '1e92fece3e560a72578ad4412a9e7d64','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};</script>
+                <script src="https://www.highperformanceformat.com/1e92fece3e560a72578ad4412a9e7d64/invoke.js"></script>
+            </div>
+            <button class="btn btn-primary btn-show" onclick="openDirectLink(); nextPage(8)">GO TO FINAL STEP</button>
+        </div>
+
+        <!-- PAGE 8 -->
+        <div id="p8" class="page">
+            <h3>DOWNLOAD READY</h3>
+            <p class="subtitle">Click the red button below to access your mod file.</p>
+            <div class="ad-slot">
+                <script>atOptions = {'key' : '86390f25619355da6e744d54728410fb','format' : 'iframe','height' : 250,'width' : 300,'params' : {}};</script>
+                <script src="https://www.highperformanceformat.com/86390f25619355da6e744d54728410fb/invoke.js"></script>
+            </div>
+            <!-- Menggunakan touchstart agar bereaksi sebelum iklan bisa menimpa klik dari user HP -->
+            <button id="final-btn" class="btn btn-download-safe btn-show" onclick="getLink()" ontouchstart="getLink()">🚀 DOWNLOAD MOD NOW 🚀</button>
+        </div>
+    </div>
+
+    <!-- Sticky Bottom Ad -->
+    <div class="sticky-ad" id="stickyAd">
+        <button class="close-sticky" onclick="document.getElementById('stickyAd').style.display='none'">X</button>
+        <script>atOptions = {'key' : 'd3e139d8e396bc56c76e6486819376d1','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script>
+        <script src="https://www.highperformanceformat.com/d3e139d8e396bc56c76e6486819376d1/invoke.js"></script>
+    </div>
+
+    <!-- SISTEM CONTINUOUS ANTI-ADBLOCK & DNS/VPN BLOCK DETECTOR -->
+    <script>
+        (function() {
+            const MODAL_ID = 'xt-adblock-warning';
+            let wasBlocked = false;
+
+            function showAdBlockModal(msg) {
+                let modal = document.getElementById(MODAL_ID);
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = MODAL_ID;
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="icon-alert">🛡️</div>
+                        <h1>IKLAN / DNS PEMBLOK TERDETEKSI</h1>
+                        <p>${msg}</p>
+                    `;
+                    document.body.appendChild(modal);
+                }
+                modal.style.display = 'flex';
+                wasBlocked = true;
+            }
+
+            function hideAdBlockModal() {
+                let modal = document.getElementById(MODAL_ID);
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+                if (wasBlocked) {
+                    window.location.reload(true);
+                }
+            }
+
+            function checkAdsAndDNS() {
+                let bait = document.createElement('div');
+                bait.innerHTML = '&nbsp;';
+                bait.className = 'adsbox ad-placement doubleclick ad-banner adsbygoogle';
+                bait.style.position = 'absolute';
+                bait.style.top = '-9999px';
+                bait.style.left = '-9999px';
+                bait.style.height = '10px';
+                document.body.appendChild(bait);
+
+                let isAdBlocked = false;
+                if (bait.offsetHeight === 0 || window.getComputedStyle(bait).display === 'none' || bait.clientHeight === 0) {
+                    isAdBlocked = true;
+                }
+                bait.remove();
+
+                if (isAdBlocked) {
+                    showAdBlockModal("Sistem mendeteksi Adblock, uBlock, atau Private DNS aktif di perangkat Anda.<br><br><b>Mohon matikan pemblokir iklan tersebut agar file mod game dapat diunduh. Halaman akan otomatis pulih setelah dimatikan.</b>");
+                    return;
+                }
+
+                const rand = Date.now();
+                fetch('https://pl28495535.effectivegatecpm.com/08/a5/d6/08a5d6e054ed992037d611a667568379.js?nocache=' + rand, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                }).then(() => {
+                    hideAdBlockModal();
+                }).catch(() => {
+                    showAdBlockModal("Koneksi ke jaringan iklan utama diblokir oleh VPN atau pengaturan jaringan Anda.<br><br><b>Harap nonaktifkan pemblokir jaringan/VPN iklan untuk melanjutkan unduhan.</b>");
+                });
+            }
+
+            window.addEventListener('load', () => {
+                checkAdsAndDNS();
+                setInterval(checkAdsAndDNS, 4000);
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    checkAdsAndDNS();
+                }
+            });
+        })();
+    </script>
+
+    <!-- SCRIPT LOGIC UTAMA HALAMAN -->
+    <script>
+        const DIRECT_LINK = "https://www.effectivegatecpm.com/s10g0wah9h?key=b4caf5570b3cacf8e5c84b00878ec41f";
+
+        function openDirectLink() {
+            window.open(DIRECT_LINK, "_blank");
+        }
+
+        const totalSteps = 8;
+        
+        function updateProgress(step) {
+            document.getElementById('step-text').innerText = `Step ${step} of ${totalSteps}`;
+            const percentage = (step / totalSteps) * 100;
+            document.getElementById('p-bar').style.width = percentage + '%';
+        }
+
+        function nextPage(step) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(`p${step}`).classList.add('active-page');
+            updateProgress(step);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if(step === 3) {
+                generateCaptcha();
+                document.getElementById('b3_cont').classList.remove('btn-show');
+                document.getElementById('c_inp').value = '';
+                document.getElementById('c_inp').focus();
+            }
+        }
+
+        function startTimer(pageId, seconds, nextBtnId) {
+            openDirectLink(); 
+            
+            const btnOpen = document.querySelector(`#${pageId} button[onclick*="startTimer"]`);
+            if(btnOpen) btnOpen.classList.remove('btn-show');
+            
+            const timerBox = document.getElementById(`timer_${pageId}`);
+            const timerSpan = timerBox.querySelector('span');
+            timerBox.style.display = 'block';
+            
+            let s = seconds;
+            timerSpan.innerText = s;
+            
+            let i = setInterval(() => {
+                s--; 
+                timerSpan.innerText = s;
+                if(s <= 0) { 
+                    clearInterval(i); 
+                    timerBox.style.display = 'none'; 
+                    const nextBtn = document.getElementById(nextBtnId);
+                    nextBtn.classList.add('btn-show'); 
+                    nextBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 1000);
+        }
+
+        let currentCaptcha = "";
+        function generateCaptcha() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let randStr = "";
+            const timeSeed = Date.now().toString(36).slice(-2).toUpperCase();
+            
+            for (let i = 0; i < 3; i++) {
+                randStr += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            currentCaptcha = randStr + "-" + timeSeed;
+            document.getElementById('captcha-display').innerText = currentCaptcha;
+        }
+
+        document.getElementById('c_inp').oninput = function() {
+            if(this.value.trim().toUpperCase() === currentCaptcha) {
+                const btn = document.getElementById('b3_cont');
+                btn.classList.add('btn-show');
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                document.getElementById('b3_cont').classList.remove('btn-show');
+            }
+        };
+
+        function getLink() {
+            window.open(DIRECT_LINK, "_blank");
+            
+            setTimeout(function() {
+                window.location.assign(finalTargetUrl);
+            }, 400);
+        }
+
+        updateProgress(1);
+    </script>
+</body>
+</html>
